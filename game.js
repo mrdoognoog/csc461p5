@@ -8,7 +8,7 @@ var defaultUp = vec3.fromValues(0,1,0); // default view up vector
 var lightAmbient = vec3.fromValues(1,1,1); // default light ambient emission
 var lightDiffuse = vec3.fromValues(1,1,1); // default light diffuse emission
 var lightSpecular = vec3.fromValues(1,1,1); // default light specular emission
-var lightPosition = vec3.fromValues(-5,5,5); // default light position
+var lightPosition = vec3.fromValues(0,5,-5); // default light position
 var rotateTheta = Math.PI/50; // how much to rotate models by with each key press
 
 var spinAngle = 0;
@@ -125,45 +125,21 @@ function handleKeyDown(event) {
         tank controls: left right to turn, up to down to move forward
         space to shoot
         */
-        
-        // model selection
-        case "Space": 
-            console.log("blam!")
-            break;
-        case "ArrowRight": // select next triangle set
-            highlightModel(modelEnum.TRIANGLES,(handleKeyDown.whichOn+1) % numTriangleSets);
-            break;
-        case "ArrowLeft": // select previous triangle set
-            highlightModel(modelEnum.TRIANGLES,(handleKeyDown.whichOn > 0) ? handleKeyDown.whichOn-1 : numTriangleSets-1);
-            break;
-        case "ArrowUp": // select next ellipsoid
-            highlightModel(modelEnum.ELLIPSOID,(handleKeyDown.whichOn+1) % numEllipsoids);
-            break;
-        case "ArrowDown": // select previous ellipsoid
-            highlightModel(modelEnum.ELLIPSOID,(handleKeyDown.whichOn > 0) ? handleKeyDown.whichOn-1 : numEllipsoids-1);
-            break;
-            
-        // view change
-        case "KeyA": // translate view left, rotate left with shift
+
+        //move left
+        case "ArrowLeft":
             Center = vec3.add(Center,Center,vec3.scale(temp,viewRight,viewDelta));
             if (!event.getModifierState("Shift"))
                 Eye = vec3.add(Eye,Eye,vec3.scale(temp,viewRight,viewDelta));
             break;
-        case "KeyD": // translate view right, rotate right with shift
+        //move right
+        case "ArrowRight":
             Center = vec3.add(Center,Center,vec3.scale(temp,viewRight,-viewDelta));
             if (!event.getModifierState("Shift"))
                 Eye = vec3.add(Eye,Eye,vec3.scale(temp,viewRight,-viewDelta));
             break;
-        case "KeyS": // translate view backward, rotate up with shift
-            if (event.getModifierState("Shift")) {
-                Center = vec3.add(Center,Center,vec3.scale(temp,Up,viewDelta));
-                Up = vec3.cross(Up,viewRight,vec3.subtract(lookAt,Center,Eye)); /* global side effect */
-            } else {
-                Eye = vec3.add(Eye,Eye,vec3.scale(temp,lookAt,-viewDelta));
-                Center = vec3.add(Center,Center,vec3.scale(temp,lookAt,-viewDelta));
-            } // end if shift not pressed
-            break;
-        case "KeyW": // translate view forward, rotate down with shift
+        //move forward
+        case "ArrowUp":
             if (event.getModifierState("Shift")) {
                 Center = vec3.add(Center,Center,vec3.scale(temp,Up,-viewDelta));
                 Up = vec3.cross(Up,viewRight,vec3.subtract(lookAt,Center,Eye)); /* global side effect */
@@ -172,82 +148,25 @@ function handleKeyDown(event) {
                 Center = vec3.add(Center,Center,vec3.scale(temp,lookAt,viewDelta));
             } // end if shift not pressed
             break;
-        case "KeyQ": // translate view up, rotate counterclockwise with shift
-            if (event.getModifierState("Shift"))
-                Up = vec3.normalize(Up,vec3.add(Up,Up,vec3.scale(temp,viewRight,-viewDelta)));
-            else {
-                Eye = vec3.add(Eye,Eye,vec3.scale(temp,Up,viewDelta));
+        //move backward
+        case "ArrowDown":
+            if (event.getModifierState("Shift")) {
                 Center = vec3.add(Center,Center,vec3.scale(temp,Up,viewDelta));
+                Up = vec3.cross(Up,viewRight,vec3.subtract(lookAt,Center,Eye)); /* global side effect */
+            } else {
+                Eye = vec3.add(Eye,Eye,vec3.scale(temp,lookAt,-viewDelta));
+                Center = vec3.add(Center,Center,vec3.scale(temp,lookAt,-viewDelta));
             } // end if shift not pressed
             break;
-        case "KeyE": // translate view down, rotate clockwise with shift
-            if (event.getModifierState("Shift"))
-                Up = vec3.normalize(Up,vec3.add(Up,Up,vec3.scale(temp,viewRight,viewDelta)));
-            else {
-                Eye = vec3.add(Eye,Eye,vec3.scale(temp,Up,-viewDelta));
-                Center = vec3.add(Center,Center,vec3.scale(temp,Up,-viewDelta));
-            } // end if shift not pressed
-            break;
-        case "Escape": // reset view to default
-            Eye = vec3.copy(Eye,defaultEye);
-            Center = vec3.copy(Center,defaultCenter);
-            Up = vec3.copy(Up,defaultUp);
-            break;
-            
-        // model transformation
-        case "KeyK": // translate left, rotate left with shift
-            if (event.getModifierState("Shift"))
-                rotateModel(Up,dirEnum.NEGATIVE);
-            else
-                translateModel(vec3.scale(temp,viewRight,viewDelta));
-            break;
-        case "Semicolon": // translate right, rotate right with shift
-            if (event.getModifierState("Shift"))
-                rotateModel(Up,dirEnum.POSITIVE);
-            else
-                translateModel(vec3.scale(temp,viewRight,-viewDelta));
-            break;
-        case "KeyL": // translate backward, rotate up with shift
-            if (event.getModifierState("Shift"))
-                rotateModel(viewRight,dirEnum.POSITIVE);
-            else
-                translateModel(vec3.scale(temp,lookAt,-viewDelta));
-            break;
-        case "KeyO": // translate forward, rotate down with shift
-            if (event.getModifierState("Shift"))
-                rotateModel(viewRight,dirEnum.NEGATIVE);
-            else
-                translateModel(vec3.scale(temp,lookAt,viewDelta));
-            break;
-        case "KeyI": // translate up, rotate counterclockwise with shift 
-            if (event.getModifierState("Shift"))
-                rotateModel(lookAt,dirEnum.POSITIVE);
-            else
-                translateModel(vec3.scale(temp,Up,viewDelta));
-            break;
-        case "KeyP": // translate down, rotate clockwise with shift
-            if (event.getModifierState("Shift"))
-                rotateModel(lookAt,dirEnum.NEGATIVE);
-            else
-                translateModel(vec3.scale(temp,Up,-viewDelta));
-            break;
-        case "Backspace": // reset model transforms to default
-            for (var whichTriSet=0; whichTriSet<numTriangleSets; whichTriSet++) {
-                vec3.set(inputTriangles[whichTriSet].translation,0,0,0);
-                vec3.set(inputTriangles[whichTriSet].xAxis,1,0,0);
-                vec3.set(inputTriangles[whichTriSet].yAxis,0,1,0);
-            } // end for all triangle sets
-            for (var whichEllipsoid=0; whichEllipsoid<numEllipsoids; whichEllipsoid++) {
-                vec3.set(inputEllipsoids[whichEllipsoid].translation,0,0,0);
-                vec3.set(inputEllipsoids[whichTriSet].xAxis,1,0,0);
-                vec3.set(inputEllipsoids[whichTriSet].yAxis,0,1,0);
-            } // end for all ellipsoids
+        //fire
+        case "Space": 
+            console.log("blam!")
             break;
         
         //switch between texture blending modes
         case "KeyB":
             texMode = 1 - texMode;
-            console.log("test");
+            break;
     } // end switch
 } // end handleKeyDown
 
@@ -370,7 +289,7 @@ function loadModels() {
 
     
         inputTriangles = [];
-        //add floors
+        //add floor
   inputTriangles.push({
     "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 0.9, "texture": "floor.png"}, 
     "vertices": [[-10, 0, 75],[10, 0, 75],[-10, 0, -75],[10,0,-25]],
@@ -378,7 +297,7 @@ function loadModels() {
     "uvs": [[0,0], [1,0], [0,1], [1,1]],
     "triangles": [[0,1,2], [1,2,3]]
   })
-        //add mandrills
+        //add test object
                     inputTriangles.push({
     "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 0.9, "texture": "mandrill.jpg"}, 
     "vertices": [[0, 0, 0],[0, 1, 0],[1, 0, 0],[1,1,0]],
@@ -817,12 +736,5 @@ function main() {
   loadModels(); // load in the models from tri file
   setupShaders(); // setup the webGL shaders
   renderModels(); // draw the triangles using webGL
-
-  //play audio when you click
-  const bgAudio = document.getElementById("bgAudio");
-    bgAudio.play().catch(e => {
-        console.log("Autoplay blocked — waiting for user interaction");
-        document.body.addEventListener('click', () => bgAudio.play(), { once: true });
-    });
   
 } // end main
