@@ -1,8 +1,6 @@
 /* GLOBAL CONSTANTS AND VARIABLES */
 
 /* assignment specific globals */
-const INPUT_TRIANGLES_URL = "https://mrdoognoog.github.io/csc461p4/triangles.json"; // triangles file loc
-const INPUT_ELLIPSOIDS_URL = "https://mrdoognoog.github.io/csc461p4/ellipsoids.json"; // ellipsoids file loc
 var SKY_URL = "https://mrdoognoog.github.io/csc461p4/mandrill_sky.png"
 var defaultEye = vec3.fromValues(0.5,1.5,-0.5); // default eye position in world space
 var defaultCenter = vec3.fromValues(0.5,0.5,0.5); // default view direction in world space
@@ -31,14 +29,6 @@ var textures = [];
 var viewDelta = 0; // how much to displace view with each key press
 
 var texMode = 0; // toggle blending modes
-
-var custom = true; //toggle part 4 or 5
-
-if (!custom){
-    defaultEye = vec3.fromValues(0.5,0.5,-0.5); // default eye position in world space
-    spinSpeed = 0
-    SKY_URL = "https://mrdoognoog.github.io/csc461p4/sky.jpg"
-}
 
 /* shader parameter locations */
 var vPosAttribLoc; // where to put position for vertex shader
@@ -129,13 +119,16 @@ function handleKeyDown(event) {
     handleKeyDown.modelOn = handleKeyDown.modelOn == undefined ? null : handleKeyDown.modelOn; // nothing selected initially
 
     switch (event.code) {
+
+        /*
+        keybindings
+        tank controls: left right to turn, up to down to move forward
+        space to shoot
+        */
         
         // model selection
         case "Space": 
-            if (handleKeyDown.modelOn != null)
-                handleKeyDown.modelOn.on = false; // turn off highlighted model
-            handleKeyDown.modelOn = null; // no highlighted model
-            handleKeyDown.whichOn = -1; // nothing highlighted
+            console.log("blam!")
             break;
         case "ArrowRight": // select next triangle set
             highlightModel(modelEnum.TRIANGLES,(handleKeyDown.whichOn+1) % numTriangleSets);
@@ -375,9 +368,7 @@ function isPowerOf2(value) {
 // read models in, load them into webgl buffers
 function loadModels() {
 
-    var wallChoice = 0;
     
-    if(custom) {
         inputTriangles = [];
         //add floors
   inputTriangles.push({
@@ -388,33 +379,18 @@ function loadModels() {
     "triangles": [[0,1,2], [1,2,3]]
   })
         //add mandrills
-        for(var i = -10; i < 10; i++){
-            for(var j = -10; j < 10; j++){
-                wallChoice = Math.random();
-                if(wallChoice >= 0.5){
                     inputTriangles.push({
     "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 0.9, "texture": "mandrill.jpg"}, 
-    "vertices": [[i-1, 0, j],[i, 0, j],[i-1, 1, j],[i,1,j]],
+    "vertices": [[0, 0, 0],[0, 1, 0],[1, 0, 0],[1,1,0]],
     "normals": [[0, 0, -1],[0, 0,-1],[0, 0,-1],[0,0,-1]],
-    "uvs": [[0,0], [1,0], [0,1], [1,1]],
+    "uvs": [[0,0], [0,1], [1,0], [1,1]],
     "triangles": [[0,1,2], [1,2,3]]
   })
-                } else {
-                    inputTriangles.push({
-    "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 0.9, "texture": "mandrill.jpg"}, 
-    "vertices": [[j, 0, i-1],[j, 0, i],[j, 1, i-1],[j,1,i]],
-    "normals": [[0, 0, -1],[0, 0,-1],[0, 0,-1],[0,0,-1]],
-    "uvs": [[0,0], [1,0], [0,1], [1,1]],
-    "triangles": [[0,1,2], [1,2,3]]
-  })
-                }
-            }
-        }
         
  //custom triangle data for part 5
-    } else {
-        inputTriangles = getJSONFile(INPUT_TRIANGLES_URL,"triangles"); // read in the triangle data
-    }
+
+        //inputTriangles = getJSONFile(INPUT_TRIANGLES_URL,"triangles"); // read in the triangle data
+
 
     try {
         if (inputTriangles == String.null)
@@ -729,7 +705,7 @@ function renderModels() {
     var mMatrix = mat4.create(); // model matrix
     var pvMatrix = mat4.create(); // hand * proj * view matrices
 
-    spinAngle += spinSpeed;
+    //spinAngle += spinSpeed;
 
     //helper function that draws a single shape
     function drawModel(currSet, whichTriSet, pvMatrix){
