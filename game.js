@@ -2,7 +2,7 @@
 
 /* assignment specific globals */
 var SKY_URL = "https://mrdoognoog.github.io/csc461p4/mandrill_sky.png"
-var defaultEye = vec3.fromValues(0.5,1.5,-0.5); // default eye position in world space
+var defaultEye = vec3.fromValues(0.5,1.5,-1.0); // default eye position in world space
 var defaultCenter = vec3.fromValues(0.5,0.5,0.5); // default view direction in world space
 var defaultUp = vec3.fromValues(0,1,0); // default view up vector
 var lightAmbient = vec3.fromValues(1,1,1); // default light ambient emission
@@ -255,8 +255,7 @@ function handleKeyDown(event) {
 function setupWebGL() {
     
     // Set up keys
-    document.onkeydown = handleKeyDown; // call this when key pressed
-
+    //document.onkeydown = handleKeyDown; // call this when key pressed
 
     var imageCanvas = document.getElementById("myImageCanvas"); // create a 2d canvas
       var cw = imageCanvas.width, ch = imageCanvas.height; 
@@ -287,6 +286,27 @@ function setupWebGL() {
     catch(e) {
       console.log(e);
     } // end catch
+
+    //set up the HUD
+    var hudCanvas = document.getElementById("myHudCanvas");
+    let hudCtx = hudCanvas.getContext("2d");
+
+    hudCtx.clearRect(0, 0, hudCtx.width, hudCtx.height);
+
+    // Example: draw a simple crosshair
+    hudCtx.strokeStyle = "white";
+    hudCtx.beginPath();
+    hudCtx.moveTo(256 - 10, 256);
+    hudCtx.lineTo(256 + 10, 256);
+    hudCtx.moveTo(256, 256 - 10);
+    hudCtx.lineTo(256, 256 + 10);
+    hudCtx.stroke();
+
+    // Example: draw text
+    hudCtx.font = "20px Arial";
+    hudCtx.fillStyle = "yellow";
+    hudCtx.fillText("HP: 100", 20, 40);
+    
  
 } // end setupWebGL
 
@@ -668,6 +688,16 @@ function setupShaders() {
     } // end catch
 } // end setup shaders
 
+let keyState = {};
+
+    document.addEventListener('keydown', function(e) {
+        keyState[e.key] = true;
+    });
+
+    document.addEventListener('keyup', function(e) {
+        keyState[e.key] = false;
+    });
+
 // render the loaded model
 function renderModels() {
     
@@ -753,6 +783,8 @@ function renderModels() {
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,triangleBuffers[whichTriSet]); // activate
         gl.drawElements(gl.TRIANGLES,3*triSetSizes[whichTriSet],gl.UNSIGNED_SHORT,0); // render
     }
+
+    if(keyState["ArrowLeft"]) console.log(keyState);
     
     window.requestAnimationFrame(renderModels); // set up frame render callback
     
@@ -805,6 +837,9 @@ function renderModels() {
     // restore state
     gl.depthMask(true);
     gl.disable(gl.BLEND);
+
+    //render the hud
+    //drawHUD();
     
 } // end render model
 
@@ -819,10 +854,10 @@ function main() {
   renderModels(); // draw the triangles using webGL
 
   //play audio when you click
-  const bgAudio = document.getElementById("bgAudio");
-    bgAudio.play().catch(e => {
-        console.log("Autoplay blocked — waiting for user interaction");
-        document.body.addEventListener('click', () => bgAudio.play(), { once: true });
-    });
+//   const bgAudio = document.getElementById("bgAudio");
+//     bgAudio.play().catch(e => {
+//         console.log("Autoplay blocked — waiting for user interaction");
+//         document.body.addEventListener('click', () => bgAudio.play(), { once: true });
+//     });
   
 } // end main
