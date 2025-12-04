@@ -607,8 +607,14 @@ function renderModels() {
         gl.drawElements(gl.TRIANGLES,3*triSetSizes[whichTriSet],gl.UNSIGNED_SHORT,0); // render
     }
 
+    //process movement
+    var lookAt = vec3.create(), viewRight = vec3.create(), temp = vec3.create(); // lookat, right & temp vectors
+    lookAt = vec3.normalize(lookAt,vec3.subtract(temp,Center,Eye)); // get lookat vector
+    viewRight = vec3.normalize(viewRight,vec3.cross(temp,lookAt,Up)); // get view right vector
+
     //console.log(keyState)
-    if (keyState["ArrowLeft"]) console.log("left!")
+    if (keyState["ArrowLeft"]) Eye = vec3.add(Eye,Eye,vec3.scale(temp,viewRight,viewDelta));
+    if (keyState["ArrowRight"]) Eye = vec3.add(Eye,Eye,vec3.scale(temp,viewRight,-viewDelta));
     
     window.requestAnimationFrame(renderModels); // set up frame render callback
     
