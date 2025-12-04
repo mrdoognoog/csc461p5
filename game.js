@@ -77,6 +77,7 @@ function getJSONFile(url,descr) {
     }
 } // end get input json file
 
+
 // set up the webGL environment
 function setupWebGL() {
 
@@ -109,14 +110,24 @@ function setupWebGL() {
     catch(e) {
       console.log(e);
     } // end catch
+ 
+} // end setupWebGL
+
+function drawHud(){
 
     //set up the HUD
     var hudCanvas = document.getElementById("myHudCanvas");
     let hudCtx = hudCanvas.getContext("2d");
 
-    hudCtx.clearRect(0, 0, hudCtx.width, hudCtx.height);
+    hudCtx.clearRect(0, 0, hudCanvas.width, hudCanvas.height);
 
-    // Example: draw a simple crosshair
+    let cw = hudCanvas.width;
+
+    const cx = cw / 2;   // radar center X
+    const cy = 50;       // radar center Y
+    const radius = 40;   // radar radius
+
+    // draw the crosshair
     hudCtx.strokeStyle = "white";
     hudCtx.beginPath();
     hudCtx.moveTo(256 - 10, 256);
@@ -125,13 +136,30 @@ function setupWebGL() {
     hudCtx.lineTo(256, 256 + 10);
     hudCtx.stroke();
 
-    // Example: draw text
+    //draw the radar
+    hudCtx.beginPath();
+    hudCtx.arc(cx, cy, radius, 0, 2 * Math.PI);
+    hudCtx.stroke();
+
+    //spin the radar
+    radarAngle += 0.04;
+
+    // compute end point of radar line
+    let x2 = cx + radius * Math.cos(radarAngle);
+    let y2 = cy + radius * Math.sin(radarAngle);
+
+    //draw radar line
+    hudCtx.beginPath();
+    hudCtx.moveTo(cx, cy);
+    hudCtx.lineTo(x2, y2);
+    hudCtx.stroke();
+
+    // lives display
     hudCtx.font = "20px Arial";
     hudCtx.fillStyle = "yellow";
     hudCtx.fillText("Lives: 3", 20, 40);
-    
- 
-} // end setupWebGL
+
+}
 
 //
 // Initialize a texture and load an image.
@@ -525,8 +553,11 @@ Up = vec3.fromValues(0, 1, 0);
 forward = vec3.fromValues(0, 0, -1);  // initial facing direction
 yaw = 0; // in radians
 
+var radarAngle = 0;
+
 // render the loaded model
 function renderModels() {
+
     
     // construct the model transform matrix, based on model state
     function makeModelTransform(currModel) {
@@ -612,31 +643,6 @@ function renderModels() {
     }
 
     //process movement
-    // let forward = vec3.create();
-    // let right = vec3.create();
-    // let up = vec3.create();
-    // let temp = vec3.create();
-
-    // // forward = normalize(Center - Eye)
-    // vec3.subtract(temp, Center, Eye);
-    // vec3.normalize(forward, temp);
-
-    // // right = normalize(cross(forward, Up))
-    // vec3.cross(temp, forward, Up);
-    // vec3.normalize(right, temp);
-
-    // // up = cross(right, forward)   (RE-ORTHOGONALIZATION FIX)
-    // vec3.cross(up, right, forward);
-
-    // // movement
-    // if (keyState["ArrowLeft"]) {
-    //     vec3.scale(temp, right, viewDelta);
-    //     vec3.add(Eye, Eye, temp);
-    // }
-    // if (keyState["ArrowRight"]) {
-    //     vec3.scale(temp, right, -viewDelta);
-    //     vec3.add(Eye, Eye, temp);
-    // }
     let temp = vec3.create();
     let right = vec3.create();
     
@@ -670,6 +676,8 @@ function renderModels() {
 
     //cannonfire (unfinished)
     if (keyState[" "]) console.log("blam!");
+
+    drawHud();
     
     window.requestAnimationFrame(renderModels); // set up frame render callback
     
