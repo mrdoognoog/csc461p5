@@ -9,7 +9,7 @@ var lightAmbient = vec3.fromValues(1,1,1); // default light ambient emission
 var lightDiffuse = vec3.fromValues(1,1,1); // default light diffuse emission
 var lightSpecular = vec3.fromValues(1,1,1); // default light specular emission
 var lightPosition = vec3.fromValues(-5,5,5); // default light position
-var rotateTheta = Math.PI/50; // how much to rotate models by with each key press
+var rotateTheta = Math.PI/100; // how much to rotate models by with each key press
 
 var spinAngle = 0;
 var spinSpeed = 0.01;
@@ -26,7 +26,7 @@ var triSetSizes = []; // this contains the size of each triangle set
 var triangleBuffers = []; // lists of indices into vertexBuffers by set, in triples
 var uvBuffers = []; //buffer for UV arrays
 var textures = [];
-var viewDelta = 0.1; // how much to displace view with each key press
+var viewDelta = 0.05; // how much to displace view with each key press
 
 var texMode = 0; // toggle blending modes
 
@@ -128,7 +128,7 @@ function setupWebGL() {
     // Example: draw text
     hudCtx.font = "20px Arial";
     hudCtx.fillStyle = "yellow";
-    hudCtx.fillText("HP: 100", 20, 40);
+    hudCtx.fillText("Lives: 3", 20, 40);
     
  
 } // end setupWebGL
@@ -216,18 +216,18 @@ function loadModels() {
         //add floors
   inputTriangles.push({
     "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 0.9, "texture": "floor.png"}, 
-    "vertices": [[-1, 0, 1],[1, 0, 1],[-1, 0, -1],[1,0,-1]],
+    "vertices": [[-10, 0, 10],[10, 0, 10],[-10, 0, -10],[10,0,-10]],
     "normals": [[0, 0, -1],[0, 0,-1],[0, 0,-1],[0,0,-1]],
     "uvs": [[0,0], [1,0], [0,1], [1,1]],
     "triangles": [[0,1,2], [1,2,3]]
   })
-        //add mandrills
-                    inputTriangles.push({
+  //tank model
+  inputTriangles.push({
     "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 0.9, "texture": "mandrill.jpg"}, 
-    "vertices": [[0, 0, 0],[0, 1, 0],[1, 0, 0],[1,1,0]],
-    "normals": [[0, 0, -1],[0, 0,-1],[0, 0,-1],[0,0,-1]],
+    "vertices": [[0,0,4],[0,4,4],[4,4,4],[4,0,4],[0,0,0],[0,4,0],[4,4,0],[4,0,0]],
+    "normals": [[0, 0, -1],[0, 0,-1],[0, 0,-1],[0,0,-1],[0, 0, -1],[0, 0,-1],[0, 0,-1],[0,0,-1]],
     "uvs": [[0,0], [0,1], [1,0], [1,1]],
-    "triangles": [[0,1,2], [1,2,3]]
+    "triangles": [[1,2,3],[1,3,4],[4,3,7],[4,7,8],[7,8,6],[5,8,6],[5,6,2],[5,2,1],[1,4,5],[4,5,8],[2,3,6],[3,6,7]]
   })
         
  //custom triangle data for part 5
@@ -641,8 +641,8 @@ function renderModels() {
     let right = vec3.create();
     
     //update yaw based on keys
-    if(keyState["ArrowLeft"]) yaw -= 0.03;
-    if(keyState["ArrowRight"]) yaw += 0.03;
+    if(keyState["ArrowLeft"]) yaw -= rotateTheta;
+    if(keyState["ArrowRight"]) yaw += rotateTheta;
 
     //recompute forward from the yaw
     forward[0] = Math.sin(yaw);
