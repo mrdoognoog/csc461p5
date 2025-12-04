@@ -215,7 +215,7 @@ function loadModels() {
         inputTriangles = [];
         //add floors
   inputTriangles.push({
-    "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 0.9, "texture": "floor.png"}, 
+    "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 1.0, "texture": "floor.png"}, 
     "vertices": [[-10, 0, 10],[10, 0, 10],[-10, 0, -10],[10,0,-10]],
     "normals": [[0, 0, -1],[0, 0,-1],[0, 0,-1],[0,0,-1]],
     "uvs": [[0,0], [1,0], [0,1], [1,1]],
@@ -223,7 +223,7 @@ function loadModels() {
   })
   //tank model
   inputTriangles.push({
-    "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 0.9, "texture": "mandrill.jpg"}, 
+    "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 1.0, "texture": "mandrill.jpg"}, 
     "vertices": [[0,0,4],[0,4,4],[4,4,4],[4,0,4],[0,0,0],[0,4,0],[4,4,0],[4,0,0]],
     "normals": [[0, 0, -1],[0, 0,-1],[0, 0,-1],[0,0,-1],[0, 0, -1],[0, 0,-1],[0, 0,-1],[0,0,-1]],
     "uvs": [[0,0], [0,1], [1,0], [1,1]],
