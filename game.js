@@ -521,6 +521,10 @@ document.addEventListener('keyup', function(e) {
     keyState[e.key] = false;
 });
 
+Up = vec3.fromValues(0, 1, 0);
+forward = vec3.fromValues(0, 0, -1);  // initial facing direction
+yaw = 0; // in radians
+
 // render the loaded model
 function renderModels() {
     
@@ -608,13 +612,64 @@ function renderModels() {
     }
 
     //process movement
-    var lookAt = vec3.create(), viewRight = vec3.create(), temp = vec3.create(); // lookat, right & temp vectors
-    lookAt = vec3.normalize(lookAt,vec3.subtract(temp,Center,Eye)); // get lookat vector
-    viewRight = vec3.normalize(viewRight,vec3.cross(temp,lookAt,Up)); // get view right vector
+    // let forward = vec3.create();
+    // let right = vec3.create();
+    // let up = vec3.create();
+    // let temp = vec3.create();
 
-    //console.log(keyState)
-    if (keyState["ArrowLeft"]) Eye = vec3.add(Eye,Eye,vec3.scale(temp,viewRight,viewDelta));
-    if (keyState["ArrowRight"]) Eye = vec3.add(Eye,Eye,vec3.scale(temp,viewRight,-viewDelta));
+    // // forward = normalize(Center - Eye)
+    // vec3.subtract(temp, Center, Eye);
+    // vec3.normalize(forward, temp);
+
+    // // right = normalize(cross(forward, Up))
+    // vec3.cross(temp, forward, Up);
+    // vec3.normalize(right, temp);
+
+    // // up = cross(right, forward)   (RE-ORTHOGONALIZATION FIX)
+    // vec3.cross(up, right, forward);
+
+    // // movement
+    // if (keyState["ArrowLeft"]) {
+    //     vec3.scale(temp, right, viewDelta);
+    //     vec3.add(Eye, Eye, temp);
+    // }
+    // if (keyState["ArrowRight"]) {
+    //     vec3.scale(temp, right, -viewDelta);
+    //     vec3.add(Eye, Eye, temp);
+    // }
+    let temp = vec3.create();
+    let right = vec3.create();
+    
+    //update yaw based on keys
+    if(keyState["ArrowLeft"]) yaw -= 0.03;
+    if(keyState["ArrowRight"]) yaw += 0.03;
+
+    //recompute forward from the yaw
+    forward[0] = Math.sin(yaw);
+    forward[1] = 0;
+    forward[2] = -Math.cos(yaw);
+    vec3.normalize(forward,forward)
+
+    //compute the right vector
+    vec3.cross(right,forward, Up)
+    vec3.normalize(right, right)
+
+    //move forward and back
+    if(keyState["ArrowUp"]){
+        vec3.scale(temp, forward, viewDelta);
+        vec3.add(Eye, Eye, temp);
+    }
+
+    if(keyState["ArrowDown"]){
+        vec3.scale(temp, forward, -viewDelta);
+        vec3.add(Eye, Eye, temp);
+    }
+
+    //keep center in front of the eye
+    vec3.add(Center, Eye, forward);
+
+    //cannonfire (unfinished)
+    if (keyState[" "]) console.log("blam!");
     
     window.requestAnimationFrame(renderModels); // set up frame render callback
     
