@@ -1,7 +1,8 @@
 /* GLOBAL CONSTANTS AND VARIABLES */
 
 /* assignment specific globals */
-var SKY_URL = "https://mrdoognoog.github.io/csc461p4/mandrill_sky.png"
+var SKY_URL = "https://mrdoognoog.github.io/csc461p5/sky.png"
+var HILLS_URL = "https://mrdoognoog.github.io/csc461p5/hills.png"
 var defaultEye = vec3.fromValues(0.5,0.5,10.0); // default eye position in world space
 var defaultCenter = vec3.fromValues(0.5,0.5,0.5); // default view direction in world space
 var defaultUp = vec3.fromValues(0,1,0); // default view up vector
