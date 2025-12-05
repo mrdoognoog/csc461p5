@@ -3,7 +3,7 @@
 /* assignment specific globals */
 var SKY_URL = "https://mrdoognoog.github.io/csc461p5/sky.png"
 var HILLS_URL = "https://mrdoognoog.github.io/csc461p5/hills.png"
-var defaultEye = vec3.fromValues(0.5,0.5,10.0); // default eye position in world space
+var defaultEye = vec3.fromValues(0.5,0.5,6.0); // default eye position in world space
 var defaultCenter = vec3.fromValues(0.5,0.5,0.5); // default view direction in world space
 var defaultUp = vec3.fromValues(0,1,0); // default view up vector
 var lightAmbient = vec3.fromValues(1,1,1); // default light ambient emission
@@ -271,21 +271,33 @@ function loadModels() {
     "uvs": [[0,0], [1,0], [0,1], [1,1]],
     "triangles": [[0,1,2], [1,2,3]]
   })
-  //tank model
-  inputTriangles.push({
-    "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 1.0, "texture": "mandrill.jpg"}, 
-    "vertices": [[0,0,4],[0,4,4],[4,4,4],[4,0,4],[0,0,0],[0,4,0],[4,4,0],[4,0,0]],
-    "normals": [[0, 0, -1],[0, 0,-1],[0, 0,-1],[0,0,-1],[0, 0, -1],[0, 0,-1],[0, 0,-1],[0,0,-1]],
-    "uvs": [[0,0], [0,1], [1,0], [1,1]],
-    "triangles": [
-  [0,1,2],[0,2,3],      // front
-  [3,2,6],[3,6,7],      // right
-  [6,7,5],[4,7,5],      // back
-  [4,5,1],[4,1,0],      // left
-  [0,3,4],[3,4,7],      // bottom
-  [1,2,5],[2,5,6]       // top
-]
-  })
+  //render a bunch of obstacles
+  for(var i = 0; i < 5; i++){
+    var offset = [(Math.random() * 10) - 5,(Math.random() * 10) - 5];
+    inputTriangles.push({
+        "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 1.0, "texture": "mandrill.jpg"}, 
+        "vertices": [[0+ offset[0],0,2 + offset[1]],
+        [0+ offset[0],2,2+ offset[1]],
+        [2+ offset[0],2,2+ offset[1]],
+        [2+ offset[0],0,2+ offset[1]],
+        [0+ offset[0],0,0+ offset[1]],
+        [0+ offset[0],2,0+ offset[1]],
+        [2+ offset[0],2,0+ offset[1]],
+        [2+ offset[0],0,0+ offset[1]]],
+        "normals": [[0, 0, -1],[0, 0,-1],[0, 0,-1],[0,0,-1],[0, 0, -1],[0, 0,-1],[0, 0,-1],[0,0,-1]],
+        "uvs": [[0,0], [0,1], [1,0], [1,1]],
+        "triangles": [
+        [0,1,2],[0,2,3],      // front
+        [3,2,6],[3,6,7],      // right
+        [6,7,5],[4,7,5],      // back
+        [4,5,1],[4,1,0],      // left
+        [0,3,4],[3,4,7],      // bottom
+        [1,2,5],[2,5,6]       // top
+        ]
+    })
+  }
+
+  
         
  //custom triangle data for part 5
 
