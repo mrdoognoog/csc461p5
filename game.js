@@ -78,30 +78,13 @@ function getJWWSONFile(url,descr) {
     }
 } // end get input json file
 
-
 // set up the webGL environment
 function setupWebGL() {
 
     var imageCanvas = document.getElementById("myImageCanvas"); // create a 2d canvas
-      var cw = imageCanvas.width, ch = imageCanvas.height; 
-      imageContext = imageCanvas.getContext("2d"); 
-      var bkgdImage = new Image(); 
-      bkgdImage.crossOrigin = "Anonymous";
-      bkgdImage.src = SKY_URL;
-      bkgdImage.onload = function(){
-          var iw = bkgdImage.width, ih = bkgdImage.height;
-          imageContext.drawImage(bkgdImage,0,0,iw,ih,0,0,cw,ch);   
-     }
-     //draw the hills
-     var hillsImg = new Image();
-     hillsImg.crossOrigin = "Anonymous";
-     hillsImg.src = HILLS_URL;
-     hillsImg.onload = function(){
-        var iw = hillsImg.width, ih = hillsImg.height;
-        imageContext.drawImage(hillsImg,0,0,iw,ih,0,0,cw,ch);
-     }
-
-     
+    var cw = imageCanvas.width, ch = imageCanvas.height; 
+    imageContext = imageCanvas.getContext("2d"); 
+    
     // Get the canvas and context
     var canvas = document.getElementById("myWebGLCanvas"); // create a js canvas
     gl = canvas.getContext("webgl"); // get a webgl object from it
@@ -121,6 +104,36 @@ function setupWebGL() {
     } // end catch
  
 } // end setupWebGL
+
+var hillscroll = 0
+
+function drawBg(){
+    var imageCanvas = document.getElementById("myImageCanvas"); // create a 2d canvas
+    imageContext = imageCanvas.getContext("2d");
+
+    var bkgdImage = new Image(); 
+    bkgdImage.crossOrigin = "Anonymous";
+    bkgdImage.src = SKY_URL;
+    bkgdImage.onload = function(){
+        var iw = bkgdImage.width, ih = bkgdImage.height;
+        imageContext.drawImage(bkgdImage,0,0,iw,ih,0,0,cw,ch);   
+    }
+    
+    var cw = imageCanvas.width, ch = imageCanvas.height; 
+    //draw the hills
+    var hillsImg = new Image();
+    hillsImg.crossOrigin = "Anonymous";
+    hillsImg.src = HILLS_URL;
+    hillsImg.onload = function(){
+        var iw = hillsImg.width, ih = hillsImg.height;
+        imageContext.drawImage(hillsImg,hillscroll,0,iw,ih,0,0,cw,ch);
+        imageContext.drawImage(hillsImg,hillscroll - iw,0,iw,ih,0,0,cw,ch);
+        imageContext.drawImage(hillsImg,hillscroll + iw,0,iw,ih,0,0,cw,ch);
+    }
+
+    //hillscroll++
+    //hillscroll =  hillscroll % hillsImg.width;
+}
 
 function drawHud(){
 
@@ -663,8 +676,14 @@ function renderModels() {
     let right = vec3.create();
     
     //update yaw based on keys
-    if(keyState["ArrowLeft"]) yaw -= rotateTheta;
-    if(keyState["ArrowRight"]) yaw += rotateTheta;
+    if(keyState["ArrowLeft"]) {
+        hillscroll--;
+        yaw -= rotateTheta;
+    }
+    if(keyState["ArrowRight"]) {
+        hillscroll++;
+        yaw += rotateTheta;
+    }
 
     //recompute forward from the yaw
     forward[0] = Math.sin(yaw);
@@ -692,6 +711,8 @@ function renderModels() {
 
     //cannonfire (unfinished)
     if (keyState[" "]) console.log("blam!");
+
+    drawBg();
 
     drawHud();
     
