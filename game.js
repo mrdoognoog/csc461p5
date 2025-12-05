@@ -52,7 +52,7 @@ var Up = vec3.clone(defaultUp); // view up vector in world space
 // ASSIGNMENT HELPER FUNCTIONS
 
 // get the JSON file from the passed URL
-function getJSONFile(url,descr) {
+function getJWWSONFile(url,descr) {
     try {
         if ((typeof(url) !== "string") || (typeof(descr) !== "string"))
             throw "getJSONFile: parameter not a string";
@@ -91,6 +91,14 @@ function setupWebGL() {
       bkgdImage.onload = function(){
           var iw = bkgdImage.width, ih = bkgdImage.height;
           imageContext.drawImage(bkgdImage,0,0,iw,ih,0,0,cw,ch);   
+     }
+     //draw the hills
+     var hillsImg = new Image();
+     hillsImg.crossOrigin = "Anonymous";
+     hillsImg.src = HILLS_URL;
+     hillsImg.onload = function(){
+        var iw = hillsImg.width, ih = hillsImg.height;
+        imageContext.drawImage(hillsImg,0,0,iw,ih,0,0,cw,ch);
      }
 
      
