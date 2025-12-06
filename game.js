@@ -625,6 +625,15 @@ yaw = 0; // in radians
 
 var radarAngle = 0;
 
+function determineCollision(pos,obj){
+    //bring down two floating points and only x and z
+    let testPos = [pos[0].toFixed(3),pos[2].toFixed(3)];
+    let testObj = [obj[0].toFixed(3),obj[2].toFixed(3)];
+    if(testPos[0] == testObj[0] && testPos[1] == testObj[1]){
+        return true;
+    }
+}
+
 // render the loaded model
 function renderModels() {
 
@@ -712,6 +721,15 @@ function renderModels() {
         gl.drawElements(gl.TRIANGLES,3*triSetSizes[whichTriSet],gl.UNSIGNED_SHORT,0); // render
     }
 
+    //check collision
+    var colliding = false;
+
+    for(var i = 0; i < obstacles.length; i++){
+        if(determineCollision(Eye, obstacles[i])){
+            colliding = true;
+        }
+    }
+
     //process movement
     let temp = vec3.create();
     let right = vec3.create();
@@ -737,14 +755,16 @@ function renderModels() {
     vec3.normalize(right, right)
 
     //move forward and back
-    if(keyState["ArrowUp"]){
-        vec3.scale(temp, forward, viewDelta);
-        vec3.add(Eye, Eye, temp);
-    }
+    if(colliding == false){
+        if(keyState["ArrowUp"]){
+            vec3.scale(temp, forward, viewDelta);
+            vec3.add(Eye, Eye, temp);
+        }
 
-    if(keyState["ArrowDown"]){
-        vec3.scale(temp, forward, -viewDelta);
-        vec3.add(Eye, Eye, temp);
+        if(keyState["ArrowDown"]){
+            vec3.scale(temp, forward, -viewDelta);
+            vec3.add(Eye, Eye, temp);
+        }
     }
 
     //keep center in front of the eye
