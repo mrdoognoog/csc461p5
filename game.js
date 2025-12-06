@@ -180,6 +180,8 @@ function drawHud(){
     hudCtx.font = "20px Arial";
     hudCtx.fillStyle = "yellow";
     hudCtx.fillText("Lives: 3", 20, 40);
+    //debug displays
+    hudCtx.fillText(Eye[0].toFixed(2) + "," + Eye[1].toFixed(2) + "," + Eye[2].toFixed(2), 20, 60);
 
 }
 
@@ -257,6 +259,9 @@ function loadTexture(gl, url) {
 function isPowerOf2(value) {
   return (value & (value - 1)) === 0;
 }
+
+//holds the coordinates of all the obstacles in the level. used for collision
+var obstacles = [];
 
 // read models in, load them into webgl buffers
 function loadModels() {
