@@ -52,7 +52,7 @@ var Up = vec3.clone(defaultUp); // view up vector in world space
 // ASSIGNMENT HELPER FUNCTIONS
 
 // get the JSON file from the passed URL
-function getJWWSONFile(url,descr) {
+function getJSONFile(url,descr) {
     try {
         if ((typeof(url) !== "string") || (typeof(descr) !== "string"))
             throw "getJSONFile: parameter not a string";
@@ -77,6 +77,11 @@ function getJWWSONFile(url,descr) {
         return(String.null);
     }
 } // end get input json file
+
+// helper function that pretty-prints vec3s
+function printVector(vec){
+    return vec[0].toFixed(2) + "," + vec[1].toFixed(2) + "," + vec[2].toFixed(2)
+}
 
 // set up the webGL environment
 function setupWebGL() {
@@ -181,7 +186,11 @@ function drawHud(){
     hudCtx.fillStyle = "yellow";
     hudCtx.fillText("Lives: 3", 20, 40);
     //debug displays
-    hudCtx.fillText(Eye[0].toFixed(2) + "," + Eye[1].toFixed(2) + "," + Eye[2].toFixed(2), 20, 60);
+    hudCtx.fillText(printVector(Eye), 20, 60);
+    hudCtx.fillText("OBSTACLES", 20, 80);
+    for(var i = 0; i < obstacles.length; i++){
+        hudCtx.fillText(printVector(obstacles[i]),20, 100 + (i*20));
+    }
 
 }
 
@@ -281,15 +290,29 @@ function loadModels() {
     var offset = [(Math.random() * 10) - 5,(Math.random() * 10) - 5];
     inputTriangles.push({
         "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 1.0, "texture": "mandrill.jpg"}, 
-        "vertices": [[0+ offset[0],0,2 + offset[1]],
-        [0+ offset[0],2,2+ offset[1]],
-        [2+ offset[0],2,2+ offset[1]],
-        [2+ offset[0],0,2+ offset[1]],
-        [0+ offset[0],0,0+ offset[1]],
-        [0+ offset[0],2,0+ offset[1]],
-        [2+ offset[0],2,0+ offset[1]],
-        [2+ offset[0],0,0+ offset[1]]],
-        "normals": [[0, 0, -1],[0, 0,-1],[0, 0,-1],[0,0,-1],[0, 0, -1],[0, 0,-1],[0, 0,-1],[0,0,-1]],
+        "vertices": [
+        [0+offset[0],0,2+offset[1]],   // 0
+        [0+offset[0],2,2+offset[1]],   // 1
+        [2+offset[0],2,2+offset[1]],   // 2
+        [2+offset[0],0,2+offset[1]],   // 3
+
+        [0+offset[0],0,0+offset[1]],   // 4
+        [0+offset[0],2,0+offset[1]],   // 5
+        [2+offset[0],2,0+offset[1]],   // 6
+        [2+offset[0],0,0+offset[1]]    // 7
+    ],
+        // averaged normals: each one points diagonally out from cube center
+    "normals": [
+        [-0.577, -0.577,  0.577],   // 0
+        [-0.577,  0.577,  0.577],   // 1
+        [ 0.577,  0.577,  0.577],   // 2
+        [ 0.577, -0.577,  0.577],   // 3
+
+        [-0.577, -0.577, -0.577],   // 4
+        [-0.577,  0.577, -0.577],   // 5
+        [ 0.577,  0.577, -0.577],   // 6
+        [ 0.577, -0.577, -0.577]    // 7
+    ],
         "uvs": [[0,0], [0,1], [1,0], [1,1]],
         "triangles": [
         [0,1,2],[0,2,3],      // front
@@ -298,8 +321,9 @@ function loadModels() {
         [4,5,1],[4,1,0],      // left
         [0,3,4],[3,4,7],      // bottom
         [1,2,5],[2,5,6]       // top
-        ]
+    ]
     })
+    obstacles.push(vec3.fromValues(offset[0],0.5,offset[1]));
   }
 
   
