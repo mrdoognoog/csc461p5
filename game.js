@@ -3,13 +3,13 @@
 /* assignment specific globals */
 var SKY_URL = "https://mrdoognoog.github.io/csc461p5/sky.png"
 var HILLS_URL = "https://mrdoognoog.github.io/csc461p5/hills.png"
-var defaultEye = vec3.fromValues(0.5,0.5,6.0); // default eye position in world space
+var defaultEye = vec3.fromValues(0.5,0.5,0.5); // default eye position in world space
 var defaultCenter = vec3.fromValues(0.5,0.5,0.5); // default view direction in world space
 var defaultUp = vec3.fromValues(0,1,0); // default view up vector
 var lightAmbient = vec3.fromValues(1,1,1); // default light ambient emission
 var lightDiffuse = vec3.fromValues(1,1,1); // default light diffuse emission
 var lightSpecular = vec3.fromValues(1,1,1); // default light specular emission
-var lightPosition = vec3.fromValues(-5,5,5); // default light position
+var lightPosition = vec3.fromValues(-5.5,5.5,-5.5); // default light position
 var rotateTheta = Math.PI/100; // how much to rotate models by with each key press
 
 var spinAngle = 0;
@@ -29,7 +29,7 @@ var uvBuffers = []; //buffer for UV arrays
 var textures = [];
 var viewDelta = 0.05; // how much to displace view with each key press
 
-var texMode = 0; // toggle blending modes
+var texMode = 1; // toggle blending modes
 
 /* shader parameter locations */
 var vPosAttribLoc; // where to put position for vertex shader
