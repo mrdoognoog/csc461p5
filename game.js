@@ -49,6 +49,9 @@ var Eye = vec3.clone(defaultEye); // eye position in world space
 var Center = vec3.clone(defaultCenter); // view direction in world space
 var Up = vec3.clone(defaultUp); // view up vector in world space
 
+/* game variables */
+var enemyPos = [1,-5]
+
 // ASSIGNMENT HELPER FUNCTIONS
 
 // get the JSON file from the passed URL
@@ -191,6 +194,8 @@ function drawHud(){
     for(var i = 0; i < obstacles.length; i++){
         hudCtx.fillText(printVector(obstacles[i]),20, 100 + (i*20));
     }
+    hudCtx.fillText("ENEMY POSITION", 320,40);
+    hudCtx.fillText(enemyPos, 320,60);
 
 }
 
@@ -328,7 +333,7 @@ function loadModels() {
   }
 
   //draw the tank
-  var offset = [1.5,-2];
+  var offset = enemyPos;
   var objScale = [0.5,0.5,0.5];
   var topOffset = 8;
   var cannonOffset = 16;
@@ -426,6 +431,7 @@ function loadModels() {
     ]
     })
     obstacles.push(vec3.fromValues(offset[0],0.5,offset[1]));
+    enemyPos[1] += 0.01;
 
   
         
@@ -831,6 +837,8 @@ function renderModels() {
     //process movement
     let temp = vec3.create();
     let right = vec3.create();
+
+    const dirEnum = {NEGATIVE: -1, POSITIVE: 1}; // enumerated rotation direction
     
     //update yaw based on keys
     if(keyState["ArrowLeft"]) {
@@ -851,9 +859,7 @@ function renderModels() {
     //compute the right vector
     vec3.cross(right,forward, Up)
     vec3.normalize(right, right)
-
-    //check collision
-    var colliding = false;
+    
 
     //move forward and back
     if(keyState["ArrowUp"]){
@@ -865,6 +871,8 @@ function renderModels() {
             
     }
 
+    //process collision
+    var colliding = false;
     for(var i = 0; i < obstacles.length; i++){
         colcheck = vec3.add(vec3.create(), Eye, temp);
         if(determineCollision(colcheck, obstacles[i])){
@@ -880,6 +888,29 @@ function renderModels() {
     //cannonfire (unfinished)
     if (keyState[" "]) console.log("blam!");
 
+    //update enemy tank position(s)
+    tankModel = inputTriangles[6];
+    function translateModel(offset) {
+        if (tankModel != null)
+            vec3.add(tankModel.translation,tankModel.translation,offset);
+    } // end translate model
+
+    function rotateModel(axis,direction) {
+        if (tankModel != null) {
+            var newRotation = mat4.create();
+
+            mat4.fromRotation(newRotation,direction*0.01,axis); // get a rotation matrix around passed axis
+            vec3.transformMat4(tankModel.xAxis,tankModel.xAxis,newRotation); // rotate model x axis tip
+            vec3.transformMat4(tankModel.yAxis,tankModel.yAxis,newRotation); // rotate model y axis tip
+        } // end if there is a highlighted model
+    } // end rotate model
+
+    //have the tank move around randomly
+    //translateModel(vec3.scale(temp,right,0.01));
+    rotateModel(Up, dirEnum.NEGATIVE);
+    enemyPos[1] += 0.01;
+
+    //draw the background (bg) and foreground (hud)
     drawBg();
 
     drawHud();
