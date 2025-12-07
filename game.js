@@ -29,7 +29,7 @@ var uvBuffers = []; //buffer for UV arrays
 var textures = [];
 var viewDelta = 0.05; // how much to displace view with each key press
 
-var texMode = 1; // toggle blending modes
+var texMode = 0; // toggle blending modes
 
 /* shader parameter locations */
 var vPosAttribLoc; // where to put position for vertex shader
@@ -287,20 +287,21 @@ function loadModels() {
   })
   //render a bunch of obstacles
   for(var i = 0; i < 5; i++){
-    var offset = [(Math.random() * 10) - 5,(Math.random() * 10) - 5];
+    //var offset = [(Math.random() * 10) - 5,(Math.random() * 10) - 5];
+    var offset = [0,-2]
     inputTriangles.push({
         "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 1.0, "texture": "mandrill.jpg"}, 
         "vertices": [
-        [0+offset[0],0,2+offset[1]],   // 0
-        [0+offset[0],2,2+offset[1]],   // 1
-        [2+offset[0],2,2+offset[1]],   // 2
-        [2+offset[0],0,2+offset[1]],   // 3
+    [offset[0] - 0.5, 0, offset[1] + 0.5],
+    [offset[0] - 0.5, 1, offset[1] + 0.5],
+    [offset[0] + 0.5, 1, offset[1] + 0.5],
+    [offset[0] + 0.5, 0, offset[1] + 0.5],
 
-        [0+offset[0],0,0+offset[1]],   // 4
-        [0+offset[0],2,0+offset[1]],   // 5
-        [2+offset[0],2,0+offset[1]],   // 6
-        [2+offset[0],0,0+offset[1]]    // 7
-    ],
+    [offset[0] - 0.5, 0, offset[1] - 0.5],
+    [offset[0] - 0.5, 1, offset[1] - 0.5],
+    [offset[0] + 0.5, 1, offset[1] - 0.5],
+    [offset[0] + 0.5, 0, offset[1] - 0.5]
+],
         // averaged normals: each one points diagonally out from cube center
     "normals": [
         [-0.577, -0.577,  0.577],   // 0
@@ -325,6 +326,98 @@ function loadModels() {
     })
     obstacles.push(vec3.fromValues(offset[0],0.5,offset[1]));
   }
+
+//   //draw an enemy tank
+//     offset = [0,-2]
+//     inputTriangles.push({
+//         "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 1.0, "texture": "mandrill.jpg"}, 
+//         "vertices": [
+//             //lower cube
+//         [0+offset[0],0,1+offset[1]],   // 0
+//         [0+offset[0],0.5,1+offset[1]],   // 1
+//         [1+offset[0],0.5,1+offset[1]],   // 2
+//         [1+offset[0],0,1+offset[1]],   // 3
+
+//         [0+offset[0],0,0+offset[1]],   // 4
+//         [0+offset[0],0.5,0+offset[1]],   // 5
+//         [1+offset[0],0.5,0+offset[1]],   // 6
+//         [1+offset[0],0,0+offset[1]],    // 7
+//         //upper cube
+//         [0+offset[0],1.0,1+offset[1]],   // 0
+//         [0+offset[0],0.5,1+offset[1]],   // 1
+//         [1+offset[0],0.5,1+offset[1]],   // 2
+//         [1+offset[0],1.0,1+offset[1]],   // 3
+
+//         [0+offset[0],1.0,0+offset[1]],   // 4
+//         [0+offset[0],0.5,0+offset[1]],   // 5
+//         [1+offset[0],0.5,0+offset[1]],   // 6
+//         [1+offset[0],1.0,0+offset[1]],    // 7
+//         //the barrel
+//         [0+offset[0],0,1+offset[1]],   // 0
+//         [0+offset[0],0.5,1+offset[1]],   // 1
+//         [1+offset[0],0.5,1+offset[1]],   // 2
+//         [1+offset[0],0,1+offset[1]],   // 3
+
+//         [0+offset[0],0,0+offset[1]],   // 4
+//         [0+offset[0],0.5,0+offset[1]],   // 5
+//         [1+offset[0],0.5,0+offset[1]],   // 6
+//         [1+offset[0],0,0+offset[1]]    // 7
+
+//     ],
+//         // averaged normals: each one points diagonally out from cube center
+//     "normals": [
+//         [-0.577, -0.577,  0.577],   // 0
+//         [-0.577,  0.577,  0.577],   // 1
+//         [ 0.577,  0.577,  0.577],   // 2
+//         [ 0.577, -0.577,  0.577],   // 3
+
+//         [-0.577, -0.577, -0.577],   // 4
+//         [-0.577,  0.577, -0.577],   // 5
+//         [ 0.577,  0.577, -0.577],   // 6
+//         [ 0.577, -0.577, -0.577],    // 7
+//         [-0.577, -0.577,  0.577],   // 0
+//         [-0.577,  0.577,  0.577],   // 1
+//         [ 0.577,  0.577,  0.577],   // 2
+//         [ 0.577, -0.577,  0.577],   // 3
+
+//         [-0.577, -0.577, -0.577],   // 4
+//         [-0.577,  0.577, -0.577],   // 5
+//         [ 0.577,  0.577, -0.577],   // 6
+//         [ 0.577, -0.577, -0.577],    // 7
+//         [-0.577, -0.577,  0.577],   // 0
+//         [-0.577,  0.577,  0.577],   // 1
+//         [ 0.577,  0.577,  0.577],   // 2
+//         [ 0.577, -0.577,  0.577],   // 3
+
+//         [-0.577, -0.577, -0.577],   // 4
+//         [-0.577,  0.577, -0.577],   // 5
+//         [ 0.577,  0.577, -0.577],   // 6
+//         [ 0.577, -0.577, -0.577]    // 7
+//     ],
+//         "uvs": [[0,0], [0,1], [1,0], [1,1]],
+//         "triangles": [
+//         [0,1,2],[0,2,3],      // front
+//         [3,2,6],[3,6,7],      // right
+//         [6,7,5],[4,7,5],      // back
+//         [4,5,1],[4,1,0],      // left
+//         [0,3,4],[3,4,7],      // bottom
+//         [1,2,5],[2,5,6],       // top
+
+//         [0+8,1+8,2+8],[0+8,2+8,3+8],      // front
+//         [3+8,2+8,6+8],[3+8,6+8,7+8],      // right
+//         [6+8,7+8,5+8],[4+8,7+8,5+8],      // back
+//         [4+8,5+8,1+8],[4+8,1+8,0+8],      // left
+//         [0+8,3+8,4+8],[3+8,4+8,7+8],      // bottom
+//         [1+8,2+8,5+8],[2+8,5+8,6+8],       // top
+
+//         [0,1,2],[0,2,3],      // front
+//         [3,2,6],[3,6,7],      // right
+//         [6,7,5],[4,7,5],      // back
+//         [4,5,1],[4,1,0],      // left
+//         [0,3,4],[3,4,7],      // bottom
+//         [1,2,5],[2,5,6]       // top
+//     ]
+//     })
 
   
         
@@ -626,7 +719,7 @@ yaw = 0; // in radians
 var radarAngle = 0;
 
 function determineCollision(pos,obj){
-    cubeSize = 1;
+    cubeSize = 0.8;
     playerRadius = 0.2;
     // Distance between player and obstacle center
     let dx = Math.abs(pos[0] - obj[0]);
