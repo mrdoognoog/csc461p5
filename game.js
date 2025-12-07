@@ -970,106 +970,47 @@ function renderModels() {
             vec3.add(tankModel.translation,tankModel.translation,offset);
     } // end translate model
 
-    // function rotateModel(axis,direction) {
-    //     if (tankModel != null) {
-    //         var newRotation = mat4.create();
+    function rotateModel(axis,direction) {
+        if (tankModel != null) {
+            var newRotation = mat4.create();
 
-    //         mat4.fromRotation(newRotation,direction*0.01,axis); // get a rotation matrix around passed axis
-    //         vec3.transformMat4(tankModel.xAxis,tankModel.xAxis,newRotation); // rotate model x axis tip
-    //         vec3.transformMat4(tankModel.yAxis,tankModel.yAxis,newRotation); // rotate model y axis tip
-    //     } // end if there is a highlighted model
-    // } // end rotate model
-
-    function rotateModel(axis, direction) {
-        if (!tankModel) return;
-
-        // safety: make sure axis is a vec3 we can normalize
-        let axisVec = vec3.create();
-        vec3.copy(axisVec, axis);
-        if (vec3.length(axisVec) === 0) {
-            console.error("rotateModel: axis has zero length", axis);
-            return;
-        }
-        vec3.normalize(axisVec, axisVec);
-
-        // build rotation matrix (direction likely in whatever per-frame units you used)
-        let angle = direction * 0.01; // keep your existing scale or change to radians/frame
-        let rot = mat4.create();
-        mat4.fromRotation(rot, angle, axisVec);
-
-        // use temps to avoid aliasing (out and a cannot safely be the same in all gl-matrix versions)
-        let tmpX = vec3.create();
-        let tmpY = vec3.create();
-
-        vec3.transformMat4(tmpX, tankModel.xAxis, rot);
-        vec3.transformMat4(tmpY, tankModel.yAxis, rot);
-
-        // sanity check for NaN / inf
-        if (!isFinite(tmpX[0]) || !isFinite(tmpX[1]) || !isFinite(tmpX[2]) ||
-            !isFinite(tmpY[0]) || !isFinite(tmpY[1]) || !isFinite(tmpY[2])) {
-            console.error("rotateModel: rotation produced invalid numbers", tmpX, tmpY);
-            return;
-        }
-
-        // write them back
-        vec3.copy(tankModel.xAxis, tmpX);
-        vec3.copy(tankModel.yAxis, tmpY);
-
-        // Re-orthonormalize the basis:
-        // z = cross(x, y) ; normalize z
-        // y = cross(z, x) ; normalize y (ensures orthogonality)
-        let zAxis = vec3.create();
-        vec3.cross(zAxis, tankModel.xAxis, tankModel.yAxis);
-        if (vec3.length(zAxis) === 0) {
-            console.warn("rotateModel: cross produced zero zAxis; attempting fallback");
-            // fallback: use world up as y-axis to rebuild
-            vec3.set(tankModel.yAxis, 0, 1, 0);
-            vec3.cross(zAxis, tankModel.xAxis, tankModel.yAxis);
-        }
-        vec3.normalize(zAxis, zAxis);
-
-        // rebuild y as orthonormal: y = cross(z, x)
-        let newY = vec3.create();
-        vec3.cross(newY, zAxis, tankModel.xAxis);
-        vec3.normalize(newY, newY);
-
-        // normalize x as well (so lengths stay 1)
-        vec3.normalize(tankModel.xAxis, tankModel.xAxis);
-
-        // store normalized axes
-        vec3.copy(tankModel.yAxis, newY);
-        tankModel.zAxis = zAxis; // optional, keep zAxis if your model uses it
-
-        // final check (optional)
-        // console.log("axes after:", tankModel.xAxis, tankModel.yAxis, tankModel.zAxis);
-    }
+            mat4.fromRotation(newRotation,direction*0.01,axis); // get a rotation matrix around passed axis
+            vec3.transformMat4(tankModel.xAxis,tankModel.xAxis,newRotation); // rotate model x axis tip
+            vec3.transformMat4(tankModel.yAxis,tankModel.yAxis,newRotation); // rotate model y axis tip
+        } // end if there is a highlighted model
+    } // end rotate model
 
 
     function turnTankTowardEye() {
-        if (!tankModel) return;
+    if (!tankModel) return;
 
-        // Tank position
-        let tx = tankModel.tx;
-        let tz = tankModel.tz;
+    let tankYaw = Math.atan2(tankModel.xAxis[0], tankModel.xAxis[2]);
 
-        // Eye position (your camera global)
-        let dx = Eye[0] - tx;
-        let dz = Eye[2] - tz;
+    let dx = Eye[0] - enemyPos[0];
+    let dz = Eye[2] - enemyPos[1];
 
-        // Desired yaw angle (radians)
-        let desiredYaw = Math.atan2(dx, dz); // note order for WebGL forward being -Z or +Z
+    let targetYaw = Math.atan2(dx, dz);
 
-        let rot = mat4.create();
-        mat4.fromYRotation(rot, desiredYaw);
+    // Compute smallest turning direction
+    let diff = targetYaw - tankYaw;
+    diff = (diff + Math.PI*3) % (Math.PI*2) - Math.PI; // wrap to [-π,π]
 
-        vec3.transformMat4(tankModel.xAxis, [1,0,0], rot);
-        vec3.transformMat4(tankModel.yAxis, [0,1,0], rot);
-    }
+    // Apply limited turning speed
+    let turnSpeed = 0.02; // radians per frame
+    let turnAmt = Math.max(-turnSpeed, Math.min(turnSpeed, diff));
+
+    // Rotate tank around Y
+    let rot = mat4.create();
+    mat4.fromYRotation(rot, turnAmt);
+
+    vec3.transformMat4(tankModel.xAxis, tankModel.xAxis, rot);
+    vec3.transformMat4(tankModel.yAxis, tankModel.yAxis, rot);
+}
 
     //have the tank move around randomly
     //translateModel(vec3.fromValues(0.01,0,0.01));
-    rotateModel(Up, dirEnum.NEGATIVE);
-    //turnTankTowardEye();
+    //rotateModel(Up, dirEnum.NEGATIVE);
+    turnTankTowardEye();
     //enemyPos[0] += 0.01;
     //enemyPos[1] += 0.01;
     //update the collision map
