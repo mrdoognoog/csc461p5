@@ -158,7 +158,7 @@ function drawHud(){
     const radius = 40;   // radar radius
 
     // draw the crosshair
-    hudCtx.strokeStyle = "white";
+    hudCtx.strokeStyle = "yellow";
     hudCtx.beginPath();
     hudCtx.moveTo(256 - 10, 256);
     hudCtx.lineTo(256 + 10, 256);
@@ -167,8 +167,44 @@ function drawHud(){
     hudCtx.stroke();
 
     //draw the radar
+    const radarScale = 0.5;
+
+    for (let i = 0; i < enemyPos.length; i++) {
+        let ex = enemyPos[0];
+        let ey = enemyPos[1];
+
+        // 1. relative position to player
+        let dx = ex - Eye[0];
+        let dy = ey - Eye[2];
+
+        // 2. rotate by negative player angle so radar follows facing direction
+        let cosA = Math.cos(-yaw);
+        let sinA = Math.sin(-yaw);
+
+        let rx = dx * cosA - dy * sinA;
+        let ry = dx * sinA + dy * cosA;
+
+        // 3. scale world distance into radar distance
+        rx /= radarScale;
+        ry /= radarScale;
+
+        // 4. screen coordinates (radar center)
+        let bx = cx + rx;
+        let by = cy + ry;
+
+        // 5. check if inside radar circle
+        if ((rx * rx + ry * ry) <= radius * radius) {
+            hudCtx.beginPath();
+            hudCtx.fillStyle = "red";
+            hudCtx.arc(bx, by, 3, 0, 2 * Math.PI);
+            hudCtx.fill();
+        }
+    }
+
     hudCtx.beginPath();
     hudCtx.arc(cx, cy, radius, 0, 2 * Math.PI);
+    hudCtx.rect(cx-radius, cy-radius, 80,80)
+    
     hudCtx.stroke();
 
     //spin the radar
@@ -184,16 +220,20 @@ function drawHud(){
     hudCtx.lineTo(x2, y2);
     hudCtx.stroke();
 
+    
+
     // lives display
     hudCtx.font = "20px Arial";
     hudCtx.fillStyle = "yellow";
     hudCtx.fillText("Lives: 3", 20, 40);
     //debug displays
     hudCtx.fillText(printVector(Eye), 20, 60);
+    hudCtx.fillText(yaw.toFixed(2),160, 60);
     hudCtx.fillText("OBSTACLES", 20, 80);
     for(var i = 0; i < obstacles.length; i++){
         hudCtx.fillText(printVector(obstacles[i]),20, 100 + (i*20));
     }
+
     hudCtx.fillText("ENEMY POSITION", 320,40);
     hudCtx.fillText(enemyPos, 320,60);
 
@@ -431,7 +471,6 @@ function loadModels() {
     ]
     })
     obstacles.push(vec3.fromValues(offset[0],0.5,offset[1]));
-    enemyPos[1] += 0.01;
 
   
         
@@ -906,9 +945,9 @@ function renderModels() {
     } // end rotate model
 
     //have the tank move around randomly
-    //translateModel(vec3.fromValues(0,0,0.01));
+    translateModel(vec3.fromValues(0,0,0));
     //rotateModel(Up, dirEnum.NEGATIVE);
-    enemyPos[1] += 0.01;
+    //enemyPos[1] += 0.01;
 
     //draw the background (bg) and foreground (hud)
     drawBg();
