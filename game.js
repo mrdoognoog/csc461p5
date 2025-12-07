@@ -203,7 +203,6 @@ function drawHud(){
 
     hudCtx.beginPath();
     hudCtx.arc(cx, cy, radius, 0, 2 * Math.PI);
-    hudCtx.rect(cx-radius, cy-radius, 80,80)
     
     hudCtx.stroke();
 
@@ -235,7 +234,8 @@ function drawHud(){
     }
 
     hudCtx.fillText("ENEMY POSITION", 320,40);
-    hudCtx.fillText(enemyPos, 320,60);
+    var ep = vec3.fromValues(enemyPos[0],0,enemyPos[1]);
+    hudCtx.fillText(printVector(ep), 320,60);
 
 }
 
@@ -316,6 +316,7 @@ function isPowerOf2(value) {
 
 //holds the coordinates of all the obstacles in the level. used for collision
 var obstacles = [];
+var bulletPos = [0,0];
 
 // read models in, load them into webgl buffers
 function loadModels() {
@@ -474,7 +475,42 @@ function loadModels() {
 
   
         
- //custom triangle data for part 5
+    //draw in the bullet (spawn offscreen for now)
+    inputTriangles.push({
+        "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 1.0, "texture": "mandrill.jpg"}, 
+        "vertices": [
+    [bulletPos[0] - 0.25, 0.25, bulletPos[1] + 0.25],
+    [bulletPos[0] - 0.25, 0.75, bulletPos[1] + 0.25],
+    [bulletPos[0] + 0.25, 0.75, bulletPos[1] + 0.25],
+    [bulletPos[0] + 0.25, 0.25, bulletPos[1] + 0.25],
+
+    [bulletPos[0] - 0.25, 0.25, bulletPos[1] - 0.25],
+    [bulletPos[0] - 0.25, 0.75, bulletPos[1] - 0.25],
+    [bulletPos[0] + 0.25, 0.75, bulletPos[1] - 0.25],
+    [bulletPos[0] + 0.25, 0.25, bulletPos[1] - 0.25]
+],
+        // averaged normals: each one points diagonally out from cube center
+    "normals": [
+        [-0.577, -0.577,  0.577],   // 0
+        [-0.577,  0.577,  0.577],   // 1
+        [ 0.577,  0.577,  0.577],   // 2
+        [ 0.577, -0.577,  0.577],   // 3
+
+        [-0.577, -0.577, -0.577],   // 4
+        [-0.577,  0.577, -0.577],   // 5
+        [ 0.577,  0.577, -0.577],   // 6
+        [ 0.577, -0.577, -0.577]    // 7
+    ],
+        "uvs": [[0,0], [0,1], [1,0], [1,1]],
+        "triangles": [
+        [0,1,2],[0,2,3],      // front
+        [3,2,6],[3,6,7],      // right
+        [6,7,5],[4,7,5],      // back
+        [4,5,1],[4,1,0],      // left
+        [0,3,4],[3,4,7],      // bottom
+        [1,2,5],[2,5,6]       // top
+    ]
+    })
 
         //inputTriangles = getJSONFile(INPUT_TRIANGLES_URL,"triangles"); // read in the triangle data
 
@@ -934,21 +970,108 @@ function renderModels() {
             vec3.add(tankModel.translation,tankModel.translation,offset);
     } // end translate model
 
-    function rotateModel(axis,direction) {
-        if (tankModel != null) {
-            var newRotation = mat4.create();
+    // function rotateModel(axis,direction) {
+    //     if (tankModel != null) {
+    //         var newRotation = mat4.create();
 
-            mat4.fromRotation(newRotation,direction*0.01,axis); // get a rotation matrix around passed axis
-            vec3.transformMat4(tankModel.xAxis,tankModel.xAxis,newRotation); // rotate model x axis tip
-            vec3.transformMat4(tankModel.yAxis,tankModel.yAxis,newRotation); // rotate model y axis tip
-        } // end if there is a highlighted model
-    } // end rotate model
+    //         mat4.fromRotation(newRotation,direction*0.01,axis); // get a rotation matrix around passed axis
+    //         vec3.transformMat4(tankModel.xAxis,tankModel.xAxis,newRotation); // rotate model x axis tip
+    //         vec3.transformMat4(tankModel.yAxis,tankModel.yAxis,newRotation); // rotate model y axis tip
+    //     } // end if there is a highlighted model
+    // } // end rotate model
+
+    function rotateModel(axis, direction) {
+        if (!tankModel) return;
+
+        // safety: make sure axis is a vec3 we can normalize
+        let axisVec = vec3.create();
+        vec3.copy(axisVec, axis);
+        if (vec3.length(axisVec) === 0) {
+            console.error("rotateModel: axis has zero length", axis);
+            return;
+        }
+        vec3.normalize(axisVec, axisVec);
+
+        // build rotation matrix (direction likely in whatever per-frame units you used)
+        let angle = direction * 0.01; // keep your existing scale or change to radians/frame
+        let rot = mat4.create();
+        mat4.fromRotation(rot, angle, axisVec);
+
+        // use temps to avoid aliasing (out and a cannot safely be the same in all gl-matrix versions)
+        let tmpX = vec3.create();
+        let tmpY = vec3.create();
+
+        vec3.transformMat4(tmpX, tankModel.xAxis, rot);
+        vec3.transformMat4(tmpY, tankModel.yAxis, rot);
+
+        // sanity check for NaN / inf
+        if (!isFinite(tmpX[0]) || !isFinite(tmpX[1]) || !isFinite(tmpX[2]) ||
+            !isFinite(tmpY[0]) || !isFinite(tmpY[1]) || !isFinite(tmpY[2])) {
+            console.error("rotateModel: rotation produced invalid numbers", tmpX, tmpY);
+            return;
+        }
+
+        // write them back
+        vec3.copy(tankModel.xAxis, tmpX);
+        vec3.copy(tankModel.yAxis, tmpY);
+
+        // Re-orthonormalize the basis:
+        // z = cross(x, y) ; normalize z
+        // y = cross(z, x) ; normalize y (ensures orthogonality)
+        let zAxis = vec3.create();
+        vec3.cross(zAxis, tankModel.xAxis, tankModel.yAxis);
+        if (vec3.length(zAxis) === 0) {
+            console.warn("rotateModel: cross produced zero zAxis; attempting fallback");
+            // fallback: use world up as y-axis to rebuild
+            vec3.set(tankModel.yAxis, 0, 1, 0);
+            vec3.cross(zAxis, tankModel.xAxis, tankModel.yAxis);
+        }
+        vec3.normalize(zAxis, zAxis);
+
+        // rebuild y as orthonormal: y = cross(z, x)
+        let newY = vec3.create();
+        vec3.cross(newY, zAxis, tankModel.xAxis);
+        vec3.normalize(newY, newY);
+
+        // normalize x as well (so lengths stay 1)
+        vec3.normalize(tankModel.xAxis, tankModel.xAxis);
+
+        // store normalized axes
+        vec3.copy(tankModel.yAxis, newY);
+        tankModel.zAxis = zAxis; // optional, keep zAxis if your model uses it
+
+        // final check (optional)
+        // console.log("axes after:", tankModel.xAxis, tankModel.yAxis, tankModel.zAxis);
+    }
+
+
+    function turnTankTowardEye() {
+        if (!tankModel) return;
+
+        // Tank position
+        let tx = tankModel.tx;
+        let tz = tankModel.tz;
+
+        // Eye position (your camera global)
+        let dx = Eye[0] - tx;
+        let dz = Eye[2] - tz;
+
+        // Desired yaw angle (radians)
+        let desiredYaw = Math.atan2(dx, dz); // note order for WebGL forward being -Z or +Z
+
+        let rot = mat4.create();
+        mat4.fromYRotation(rot, desiredYaw);
+
+        vec3.transformMat4(tankModel.xAxis, [1,0,0], rot);
+        vec3.transformMat4(tankModel.yAxis, [0,1,0], rot);
+    }
 
     //have the tank move around randomly
-    translateModel(vec3.fromValues(0.01,0,0.01));
-    //rotateModel(Up, dirEnum.NEGATIVE);
-    enemyPos[0] += 0.01;
-    enemyPos[1] += 0.01;
+    //translateModel(vec3.fromValues(0.01,0,0.01));
+    rotateModel(Up, dirEnum.NEGATIVE);
+    //turnTankTowardEye();
+    //enemyPos[0] += 0.01;
+    //enemyPos[1] += 0.01;
     //update the collision map
     obstacles[5] = vec3.fromValues(enemyPos[0],0,enemyPos[1])
 
