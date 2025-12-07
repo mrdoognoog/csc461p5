@@ -945,9 +945,12 @@ function renderModels() {
     } // end rotate model
 
     //have the tank move around randomly
-    translateModel(vec3.fromValues(0,0,0));
+    translateModel(vec3.fromValues(0.01,0,0.01));
     //rotateModel(Up, dirEnum.NEGATIVE);
-    //enemyPos[1] += 0.01;
+    enemyPos[0] += 0.01;
+    enemyPos[1] += 0.01;
+    //update the collision map
+    obstacles[5] = vec3.fromValues(enemyPos[0],0,enemyPos[1])
 
     //draw the background (bg) and foreground (hud)
     drawBg();
