@@ -763,8 +763,10 @@ function renderModels() {
         vec3.scale(temp, forward, -viewDelta);
             
     }
+
     for(var i = 0; i < obstacles.length; i++){
-        if(determineCollision(Eye, obstacles[i])){
+        colcheck = vec3.add(vec3.create(), Eye, temp);
+        if(determineCollision(colcheck, obstacles[i])){
             colliding = true;
         }
     }
