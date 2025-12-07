@@ -906,8 +906,8 @@ function renderModels() {
     } // end rotate model
 
     //have the tank move around randomly
-    //translateModel(vec3.scale(temp,right,0.01));
-    rotateModel(Up, dirEnum.NEGATIVE);
+    //translateModel(vec3.fromValues(0,0,0.01));
+    //rotateModel(Up, dirEnum.NEGATIVE);
     enemyPos[1] += 0.01;
 
     //draw the background (bg) and foreground (hud)
