@@ -51,6 +51,12 @@ var Up = vec3.clone(defaultUp); // view up vector in world space
 
 /* game variables */
 var enemyPos = [1,-5]
+let bulletDirection = vec3.fromValues(0, 0, -1);
+let bulletSpeed = 0;
+
+//holds the coordinates of all the obstacles in the level. used for collision
+var obstacles = [];
+var bulletPos = [0,0];
 
 // ASSIGNMENT HELPER FUNCTIONS
 
@@ -313,10 +319,6 @@ function loadTexture(gl, url) {
 function isPowerOf2(value) {
   return (value & (value - 1)) === 0;
 }
-
-//holds the coordinates of all the obstacles in the level. used for collision
-var obstacles = [];
-var bulletPos = [0,0];
 
 // read models in, load them into webgl buffers
 function loadModels() {
@@ -962,12 +964,33 @@ function renderModels() {
 
     //cannonfire (unfinished)
     bulletModel = inputTriangles[7];
-    if (keyState[" "]) {
-        console.log("blam!");
-        bulletPos[0] = 5;
-        vec3.add(bulletModel.translation,bulletModel.translation,vec3.fromValues(0.01,0,0.01));
+    if (keyState[" "] && !spaceWasDown) {
 
+        console.log("blam!");
+
+        // Put bullet at the player's eye
+        vec3.copy(bulletModel.translation, Eye);
+
+        // Compute firing direction based on camera yaw
+        vec3.set(
+            bulletDirection,
+            Math.sin(yaw),   // x
+            0,               // y
+            -Math.cos(yaw)   // z
+        );
+
+        vec3.normalize(bulletDirection, bulletDirection);
+
+        bulletSpeed = 0.2; // whatever speed you want
     }
+
+    spaceWasDown = keyState[" "];
+
+    if (bulletSpeed > 0) {
+    let delta = vec3.create();
+    vec3.scale(delta, bulletDirection, bulletSpeed);
+    vec3.add(bulletModel.translation, bulletModel.translation, delta);
+}
 
     //update enemy tank position(s)
     tankModel = inputTriangles[6];
