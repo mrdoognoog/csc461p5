@@ -29,7 +29,7 @@ var uvBuffers = []; //buffer for UV arrays
 var textures = [];
 var viewDelta = 0.05; // how much to displace view with each key press
 
-var texMode = 0; // toggle blending modes
+var texMode = 1; // toggle blending modes
 
 /* shader parameter locations */
 var vPosAttribLoc; // where to put position for vertex shader
@@ -425,6 +425,7 @@ function loadModels() {
         [1+cannonOffset,2+cannonOffset,5+cannonOffset],[2+cannonOffset,5+cannonOffset,6+cannonOffset],       // top
     ]
     })
+    obstacles.push(vec3.fromValues(offset[0],0.5,offset[1]));
 
   
         
