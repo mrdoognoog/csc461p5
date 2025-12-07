@@ -961,7 +961,13 @@ function renderModels() {
     vec3.add(Center, Eye, forward);
 
     //cannonfire (unfinished)
-    if (keyState[" "]) console.log("blam!");
+    bulletModel = inputTriangles[7];
+    if (keyState[" "]) {
+        console.log("blam!");
+        bulletPos[0] = 5;
+        vec3.add(bulletModel.translation,bulletModel.translation,vec3.fromValues(0.01,0,0.01));
+
+    }
 
     //update enemy tank position(s)
     tankModel = inputTriangles[6];
