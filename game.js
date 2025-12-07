@@ -327,97 +327,104 @@ function loadModels() {
     obstacles.push(vec3.fromValues(offset[0],0.5,offset[1]));
   }
 
-//   //draw an enemy tank
-//     offset = [0,-2]
-//     inputTriangles.push({
-//         "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 1.0, "texture": "mandrill.jpg"}, 
-//         "vertices": [
-//             //lower cube
-//         [0+offset[0],0,1+offset[1]],   // 0
-//         [0+offset[0],0.5,1+offset[1]],   // 1
-//         [1+offset[0],0.5,1+offset[1]],   // 2
-//         [1+offset[0],0,1+offset[1]],   // 3
+  //draw the tank
+  var offset = [1.5,-2];
+  var objScale = [0.5,0.5,0.5];
+  var topOffset = 8;
+  var cannonOffset = 16;
+  var cannonPos = [offset[0] + 0.0, offset[1] + 0.75,-0.25];
+    inputTriangles.push({
+        "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 1.0, "texture": "mandrill.jpg"}, 
+        "vertices": [
+            //base of the tank
+    [offset[0] - objScale[0], 0, offset[1] + objScale[0]],
+    [offset[0] - objScale[0], objScale[0], offset[1] + objScale[0]],
+    [offset[0] + objScale[0], objScale[0], offset[1] + objScale[0]],
+    [offset[0] + objScale[0], 0, offset[1] + objScale[0]],
 
-//         [0+offset[0],0,0+offset[1]],   // 4
-//         [0+offset[0],0.5,0+offset[1]],   // 5
-//         [1+offset[0],0.5,0+offset[1]],   // 6
-//         [1+offset[0],0,0+offset[1]],    // 7
-//         //upper cube
-//         [0+offset[0],1.0,1+offset[1]],   // 0
-//         [0+offset[0],0.5,1+offset[1]],   // 1
-//         [1+offset[0],0.5,1+offset[1]],   // 2
-//         [1+offset[0],1.0,1+offset[1]],   // 3
+    [offset[0] - objScale[0], 0, offset[1] - objScale[0]],
+    [offset[0] - objScale[0], objScale[0], offset[1] - objScale[0]],
+    [offset[0] + objScale[0], objScale[0], offset[1] - objScale[0]],
+    [offset[0] + objScale[0], 0, offset[1] - objScale[0]],
+    //top of the tank
+    [offset[0] - objScale[0] / 2, 0+0.5, offset[1] + objScale[0] / 2],
+    [offset[0] - objScale[0] / 2, (objScale[0] / 2)+0.5, offset[1] + objScale[0] / 2],
+    [offset[0] + objScale[0] / 2, (objScale[0] / 2)+0.5, offset[1] + objScale[0] / 2],
+    [offset[0] + objScale[0] / 2, 0+0.5, offset[1] + objScale[0] / 2],
 
-//         [0+offset[0],1.0,0+offset[1]],   // 4
-//         [0+offset[0],0.5,0+offset[1]],   // 5
-//         [1+offset[0],0.5,0+offset[1]],   // 6
-//         [1+offset[0],1.0,0+offset[1]],    // 7
-//         //the barrel
-//         [0+offset[0],0,1+offset[1]],   // 0
-//         [0+offset[0],0.5,1+offset[1]],   // 1
-//         [1+offset[0],0.5,1+offset[1]],   // 2
-//         [1+offset[0],0,1+offset[1]],   // 3
+    [offset[0] - objScale[0] / 2, 0+0.5, offset[1] - objScale[0] / 2],
+    [offset[0] - objScale[0] / 2, (objScale[0] / 2)+0.5, offset[1] - objScale[0] / 2],
+    [offset[0] + objScale[0] / 2, (objScale[0] / 2)+0.5, offset[1] - objScale[0] / 2],
+    [offset[0] + objScale[0] / 2, 0+0.5, offset[1] - objScale[0] / 2],
+    //tank cannon
+    [cannonPos[0] - objScale[0] / 2, 0+0.5+cannonPos[2], cannonPos[1] + objScale[0] / 2],
+    [cannonPos[0] - objScale[0] / 2, (objScale[0] / 2)+0.5+cannonPos[2], cannonPos[1] + objScale[0] / 2],
+    [cannonPos[0] + objScale[0] / 2, (objScale[0] / 2)+0.5+cannonPos[2], cannonPos[1] + objScale[0] / 2],
+    [cannonPos[0] + objScale[0] / 2, 0+0.5+cannonPos[2], cannonPos[1] + objScale[0] / 2],
 
-//         [0+offset[0],0,0+offset[1]],   // 4
-//         [0+offset[0],0.5,0+offset[1]],   // 5
-//         [1+offset[0],0.5,0+offset[1]],   // 6
-//         [1+offset[0],0,0+offset[1]]    // 7
+    [cannonPos[0] - objScale[0] / 2, 0+0.5+cannonPos[2], cannonPos[1] - objScale[0] / 2],
+    [cannonPos[0] - objScale[0] / 2, (objScale[0] / 2)+0.5+cannonPos[2], cannonPos[1] - objScale[0] / 2],
+    [cannonPos[0] + objScale[0] / 2, (objScale[0] / 2)+0.5+cannonPos[2], cannonPos[1] - objScale[0] / 2],
+    [cannonPos[0] + objScale[0] / 2, 0+0.5+cannonPos[2], cannonPos[1] - objScale[0] / 2]
+],
+        // averaged normals: each one points diagonally out from cube center
+    "normals": [
+        //base of the tank
+        [-0.577, -0.577,  0.577],   // 0
+        [-0.577,  0.577,  0.577],   // 1
+        [ 0.577,  0.577,  0.577],   // 2
+        [ 0.577, -0.577,  0.577],   // 3
 
-//     ],
-//         // averaged normals: each one points diagonally out from cube center
-//     "normals": [
-//         [-0.577, -0.577,  0.577],   // 0
-//         [-0.577,  0.577,  0.577],   // 1
-//         [ 0.577,  0.577,  0.577],   // 2
-//         [ 0.577, -0.577,  0.577],   // 3
+        [-0.577, -0.577, -0.577],   // 4
+        [-0.577,  0.577, -0.577],   // 5
+        [ 0.577,  0.577, -0.577],   // 6
+        [ 0.577, -0.577, -0.577],    // 7
+        //top of the tank
+        [-0.577, -0.577,  0.577],   // 0
+        [-0.577,  0.577,  0.577],   // 1
+        [ 0.577,  0.577,  0.577],   // 2
+        [ 0.577, -0.577,  0.577],   // 3
 
-//         [-0.577, -0.577, -0.577],   // 4
-//         [-0.577,  0.577, -0.577],   // 5
-//         [ 0.577,  0.577, -0.577],   // 6
-//         [ 0.577, -0.577, -0.577],    // 7
-//         [-0.577, -0.577,  0.577],   // 0
-//         [-0.577,  0.577,  0.577],   // 1
-//         [ 0.577,  0.577,  0.577],   // 2
-//         [ 0.577, -0.577,  0.577],   // 3
+        [-0.577, -0.577, -0.577],   // 4
+        [-0.577,  0.577, -0.577],   // 5
+        [ 0.577,  0.577, -0.577],   // 6
+        [ 0.577, -0.577, -0.577],    // 7
+        //cannon
+        [-0.577, -0.577,  0.577],   // 0
+        [-0.577,  0.577,  0.577],   // 1
+        [ 0.577,  0.577,  0.577],   // 2
+        [ 0.577, -0.577,  0.577],   // 3
 
-//         [-0.577, -0.577, -0.577],   // 4
-//         [-0.577,  0.577, -0.577],   // 5
-//         [ 0.577,  0.577, -0.577],   // 6
-//         [ 0.577, -0.577, -0.577],    // 7
-//         [-0.577, -0.577,  0.577],   // 0
-//         [-0.577,  0.577,  0.577],   // 1
-//         [ 0.577,  0.577,  0.577],   // 2
-//         [ 0.577, -0.577,  0.577],   // 3
-
-//         [-0.577, -0.577, -0.577],   // 4
-//         [-0.577,  0.577, -0.577],   // 5
-//         [ 0.577,  0.577, -0.577],   // 6
-//         [ 0.577, -0.577, -0.577]    // 7
-//     ],
-//         "uvs": [[0,0], [0,1], [1,0], [1,1]],
-//         "triangles": [
-//         [0,1,2],[0,2,3],      // front
-//         [3,2,6],[3,6,7],      // right
-//         [6,7,5],[4,7,5],      // back
-//         [4,5,1],[4,1,0],      // left
-//         [0,3,4],[3,4,7],      // bottom
-//         [1,2,5],[2,5,6],       // top
-
-//         [0+8,1+8,2+8],[0+8,2+8,3+8],      // front
-//         [3+8,2+8,6+8],[3+8,6+8,7+8],      // right
-//         [6+8,7+8,5+8],[4+8,7+8,5+8],      // back
-//         [4+8,5+8,1+8],[4+8,1+8,0+8],      // left
-//         [0+8,3+8,4+8],[3+8,4+8,7+8],      // bottom
-//         [1+8,2+8,5+8],[2+8,5+8,6+8],       // top
-
-//         [0,1,2],[0,2,3],      // front
-//         [3,2,6],[3,6,7],      // right
-//         [6,7,5],[4,7,5],      // back
-//         [4,5,1],[4,1,0],      // left
-//         [0,3,4],[3,4,7],      // bottom
-//         [1,2,5],[2,5,6]       // top
-//     ]
-//     })
+        [-0.577, -0.577, -0.577],   // 4
+        [-0.577,  0.577, -0.577],   // 5
+        [ 0.577,  0.577, -0.577],   // 6
+        [ 0.577, -0.577, -0.577],    // 7
+    ],
+        "uvs": [[0,0], [0,1], [1,0], [1,1]],
+        "triangles": [
+            //base of the tank
+        [0,1,2],[0,2,3],      // front
+        [3,2,6],[3,6,7],      // right
+        [6,7,5],[4,7,5],      // back
+        [4,5,1],[4,1,0],      // left
+        [0,3,4],[3,4,7],      // bottom
+        [1,2,5],[2,5,6],       // top
+        //top of the tank
+        [0+topOffset,1+topOffset,2+topOffset],[0+topOffset,2+topOffset,3+topOffset],      // front
+        [3+topOffset,2+topOffset,6+topOffset],[3+topOffset,6+topOffset,7+topOffset],      // right
+        [6+topOffset,7+topOffset,5+topOffset],[4+topOffset,7+topOffset,5+topOffset],      // back
+        [4+topOffset,5+topOffset,1+topOffset],[4+topOffset,1+topOffset,0+topOffset],      // left
+        [0+topOffset,3+topOffset,4+topOffset],[3+topOffset,4+topOffset,7+topOffset],      // bottom
+        [1+topOffset,2+topOffset,5+topOffset],[2+topOffset,5+topOffset,6+topOffset],       // top
+        //cannon
+        [0+cannonOffset,1+cannonOffset,2+cannonOffset],[0+cannonOffset,2+cannonOffset,3+cannonOffset],      // front
+        [3+cannonOffset,2+cannonOffset,6+cannonOffset],[3+cannonOffset,6+cannonOffset,7+cannonOffset],      // right
+        [6+cannonOffset,7+cannonOffset,5+cannonOffset],[4+cannonOffset,7+cannonOffset,5+cannonOffset],      // back
+        [4+cannonOffset,5+cannonOffset,1+cannonOffset],[4+cannonOffset,1+cannonOffset,0+cannonOffset],      // left
+        [0+cannonOffset,3+cannonOffset,4+cannonOffset],[3+cannonOffset,4+cannonOffset,7+cannonOffset],      // bottom
+        [1+cannonOffset,2+cannonOffset,5+cannonOffset],[2+cannonOffset,5+cannonOffset,6+cannonOffset],       // top
+    ]
+    })
 
   
         
