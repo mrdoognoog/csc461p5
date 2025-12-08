@@ -403,7 +403,8 @@ function drawHud(){
     }
 
     //draw damage overlay
-    hudCtx.drawImage(cracks[1],0,0,512,512,0,0,512,512);   
+    //hudCtx.drawImage(cracks[3 - lives],0,0,512,512,0,0,512,512);   
+    //hudCtx.drawImage(cracks[1],0,0,512,512,0,0,512,512); 
 
 }
 
