@@ -112,9 +112,14 @@ var Up = vec3.clone(defaultUp); // view up vector in world space
 /* game variables */
 //var enemyPos = [1,-5]
 let enemyPos = vec3.fromValues(1,0,-2); //the INITIAL enemy position
+//bullet variables. first is player, second is enemy
 let bulletDirection = vec3.fromValues(0, 0, -1);
 let bulletSpeed = 0;
 let bulletStartPos = vec3.create();
+
+let bulletDirection2 = vec3.fromValues(0, 0, -1);
+let bulletSpeed2 = 0;
+let bulletStartPos2 = vec3.create();
 const BULLET_MAX_DISTANCE = 100.0;
 const TANK_HIT_RADIUS = 1.0;
 const MAP_MIN = -6;
@@ -127,6 +132,7 @@ var score = 0;
 //var obstacles = [];
 //var bulletPos = [0,0];
 var bulletPos = vec3.fromValues(90,90,90); //INITIAL bullet position
+var bulletPos2 = vec3.fromValues(100,100,200); //enemy bullet
 
 // ASSIGNMENT HELPER FUNCTIONS
 
@@ -447,7 +453,6 @@ function loadModels() {
   }
 
   //draw the tank
-  var offset = enemyPos;
   var objScale = [1.0,0.5,1.0];
   var topOffset = 8;
   var cannonOffset = 16;
@@ -547,6 +552,43 @@ function loadModels() {
     //obstacles.push(vec3.fromValues(offset[0],0.5,offset[2]));
 
     //draw in the bullet (spawn offscreen for now)
+    inputTriangles.push({
+        "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 1.0, "texture": "mandrill.jpg"}, 
+        "vertices": [
+    [ - 0.25, 0.25,  + 0.25],
+    [ - 0.25, 0.75,  + 0.25],
+    [ + 0.25, 0.75,  + 0.25],
+    [ + 0.25, 0.25,  + 0.25],
+
+    [ - 0.25, 0.25,  - 0.25],
+    [ - 0.25, 0.75,  - 0.25],
+    [ + 0.25, 0.75,  - 0.25],
+    [ + 0.25, 0.25,  - 0.25]
+],
+        // averaged normals: each one points diagonally out from cube center
+    "normals": [
+        [-0.577, -0.577,  0.577],   // 0
+        [-0.577,  0.577,  0.577],   // 1
+        [ 0.577,  0.577,  0.577],   // 2
+        [ 0.577, -0.577,  0.577],   // 3
+
+        [-0.577, -0.577, -0.577],   // 4
+        [-0.577,  0.577, -0.577],   // 5
+        [ 0.577,  0.577, -0.577],   // 6
+        [ 0.577, -0.577, -0.577]    // 7
+    ],
+        "uvs": [[0,0], [0,1], [1,0], [1,1]],
+        "triangles": [
+        [0,1,2],[0,2,3],      // front
+        [3,2,6],[3,6,7],      // right
+        [6,7,5],[4,7,5],      // back
+        [4,5,1],[4,1,0],      // left
+        [0,3,4],[3,4,7],      // bottom
+        [1,2,5],[2,5,6]       // top
+    ]
+    })
+
+    //draw the other bullet (offscreen, for enemy)
     inputTriangles.push({
         "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 1.0, "texture": "mandrill.jpg"}, 
         "vertices": [
@@ -691,6 +733,7 @@ function loadModels() {
         }
         inputTriangles[6].translation = enemyPos;
         inputTriangles[7].translation = bulletPos;
+        inputTriangles[8].translation = bulletPos2;
     } // end try 
 
     
@@ -905,7 +948,9 @@ function determineCollision(pos,obj){
 let aiMoveScale = 0.01; //by how much to move by (faster over time)
 let aiMoveTimer = 0; //current timer of particular direction
 let aiCurrentTimerMax = 100; //maximum time before another direction is chosen
-var aiCurrentDirection = 0; //this number decides what direction the ai goes (one of eight cardinal)
+let aiCurrentDirection = 0; //this number decides what direction the ai goes (one of eight cardinal)
+let aiFireChance = 0; //random number that determins if the tank fires
+let aiFireMax = 999; //chance needed every frame for the tank to fire. gets higher every point earned
 
 // render the loaded model
 function renderModels() {
@@ -1048,6 +1093,7 @@ function renderModels() {
     vec3.add(Center, Eye, forward);
 
     //cannonfire
+    bulletModel2 = inputTriangles[8];
     bulletModel = inputTriangles[7];
     enemyModel = inputTriangles[6];
     if (keyState[" "] && !spaceWasDown) {
@@ -1094,6 +1140,15 @@ function renderModels() {
         // (Optional) zero direction
         vec3.set(bulletDirection, 0, 0, 0);
     }
+    function resetBullet2() {
+        bulletSpeed2 = 0;
+
+        // Optionally hide the bullet by putting it far away
+        vec3.set(bulletModel2.translation, 9999, 9999, 9999);
+
+        // (Optional) zero direction
+        vec3.set(bulletDirection2, 0, 0, 0);
+    }
 
     //move the bullet (if active)
     if (bulletSpeed > 0) {
@@ -1119,6 +1174,8 @@ function renderModels() {
             console.log("HIT!");
             playHit();
             score += 100;
+            aiFireMax -= 1; //take shots more often
+            aiMoveScale += 0.001; //get faster for every point
 
             resetBullet();
             respawnEnemy(enemyModel);
@@ -1178,8 +1235,6 @@ function renderModels() {
     }
 
     //have the tank move around randomly
-
-
     switch(aiCurrentDirection){
         case 0:
             translateModel(vec3.fromValues(1 * aiMoveScale, 0, 0));
@@ -1208,6 +1263,12 @@ function renderModels() {
         default:
             translateModel(vec3.fromValues(0, 0, 0));
             break;
+    }
+
+    //...and fire randomly
+    aiFireChance = Math.random() * 1000;
+    if(aiFireChance > aiFireMax){
+        playFire();
     }
 
     aiMoveTimer++;
