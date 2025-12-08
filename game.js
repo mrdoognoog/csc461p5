@@ -53,6 +53,14 @@ var Up = vec3.clone(defaultUp); // view up vector in world space
 var enemyPos = [1,-5]
 let bulletDirection = vec3.fromValues(0, 0, -1);
 let bulletSpeed = 0;
+let bulletStartPos = vec3.create();
+const BULLET_MAX_DISTANCE = 100.0;
+const TANK_HIT_RADIUS = 2.0;
+const MAP_MIN = -20;
+const MAP_MAX = 20;
+
+var lives = 3;
+var score = 0;
 
 //holds the coordinates of all the obstacles in the level. used for collision
 var obstacles = [];
@@ -225,12 +233,11 @@ function drawHud(){
     hudCtx.lineTo(x2, y2);
     hudCtx.stroke();
 
-    
-
     // lives display
     hudCtx.font = "20px Arial";
     hudCtx.fillStyle = "yellow";
-    hudCtx.fillText("Lives: 3", 20, 40);
+    hudCtx.fillText("Lives: " + lives, 20, 40);
+    hudCtx.fillText("Score: " + score, 320, 40);
     //debug displays
     hudCtx.fillText(printVector(Eye), 20, 60);
     hudCtx.fillText(yaw.toFixed(2),160, 60);
@@ -239,9 +246,12 @@ function drawHud(){
         hudCtx.fillText(printVector(obstacles[i]),20, 100 + (i*20));
     }
 
-    hudCtx.fillText("ENEMY POSITION", 320,40);
+    hudCtx.fillText("ENEMY POSITION", 320,60);
     var ep = vec3.fromValues(enemyPos[0],0,enemyPos[1]);
-    hudCtx.fillText(printVector(ep), 320,60);
+    hudCtx.fillText(printVector(ep), 320,80);
+    hudCtx.fillText("BULLET POSITION", 320,100);
+    var bp = vec3.fromValues(bulletPos[0],0,bulletPos[1]);
+    hudCtx.fillText(printVector(bp), 320,120);
 
 }
 
@@ -981,16 +991,63 @@ function renderModels() {
 
         vec3.normalize(bulletDirection, bulletDirection);
 
-        bulletSpeed = 0.2; // whatever speed you want
+        bulletSpeed = 0.1; // whatever speed you want
+
+        // Record starting point for distance tracking
+        vec3.copy(bulletStartPos, bulletModel.translation);
     }
 
     spaceWasDown = keyState[" "];
 
+    //respawn the enemy tank after it has been hit
+    function respawnEnemy(enemyModel) {
+        let rx = MAP_MIN + Math.random() * (MAP_MAX - MAP_MIN);
+        let rz = MAP_MIN + Math.random() * (MAP_MAX - MAP_MIN);
+
+        vec3.set(enemyModel.translation, rx, enemyModel.translation[1], rz);
+    }
+
+    //set up distances
+    var enemyD = vec3.fromValues(enemyPos[0],0,enemyPos[2]);
+    var bulletD = vec3.fromValues(bulletPos[0],0,bulletPos[2]);
+    let bulletDist = vec3.distance(enemyD, bulletD);
+
+    //register a hit, reset the enemy
+    if (bulletDist < TANK_HIT_RADIUS) {
+        console.log("HIT!");
+        score += 100;
+
+        resetBullet();
+        respawnEnemy(enemyModel);
+    }
+
+    //reset the bullet, put it back to a "parking place" (far away where nothing would reach it)
+    function resetBullet() {
+        bulletSpeed = 0;
+
+        // Optionally hide the bullet by putting it far away
+        vec3.set(bulletModel.translation, 9999, 9999, 9999);
+
+        // (Optional) zero direction
+        vec3.set(bulletDirection, 0, 0, 0);
+    }
+
+    //move the bullet (if active)
     if (bulletSpeed > 0) {
-    let delta = vec3.create();
-    vec3.scale(delta, bulletDirection, bulletSpeed);
-    vec3.add(bulletModel.translation, bulletModel.translation, delta);
-}
+        let delta = vec3.create();
+        vec3.scale(delta, bulletDirection, bulletSpeed);
+        vec3.add(bulletModel.translation, bulletModel.translation, delta);
+        bulletPos[0] = bulletModel.translation[0];
+        bulletPos[1] = bulletModel.translation[2];
+
+        // Compute distance from starting point
+        let dist = vec3.distance(bulletModel.translation, bulletStartPos);
+
+        // Reset if too far
+        if (dist > BULLET_MAX_DISTANCE) {
+            resetBullet();
+        }
+    }
 
     //update enemy tank position(s)
     tankModel = inputTriangles[6];
@@ -1047,7 +1104,6 @@ function renderModels() {
 
     //draw the background (bg) and foreground (hud)
     drawBg();
-
     drawHud();
     
     window.requestAnimationFrame(renderModels); // set up frame render callback
