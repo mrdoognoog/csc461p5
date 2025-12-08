@@ -66,7 +66,7 @@ var score = 0;
 //holds the coordinates of all the obstacles in the level. used for collision
 //var obstacles = [];
 //var bulletPos = [0,0];
-var bulletPos = vec3.fromValues(0,0,0); //INITIAL bullet position
+var bulletPos = vec3.fromValues(90,90,90); //INITIAL bullet position
 
 // ASSIGNMENT HELPER FUNCTIONS
 
@@ -491,15 +491,15 @@ function loadModels() {
     inputTriangles.push({
         "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 1.0, "texture": "mandrill.jpg"}, 
         "vertices": [
-    [bulletPos[0] - 0.25, 0.25, bulletPos[2] + 0.25],
-    [bulletPos[0] - 0.25, 0.75, bulletPos[2] + 0.25],
-    [bulletPos[0] + 0.25, 0.75, bulletPos[2] + 0.25],
-    [bulletPos[0] + 0.25, 0.25, bulletPos[2] + 0.25],
+    [ - 0.25, 0.25,  + 0.25],
+    [ - 0.25, 0.75,  + 0.25],
+    [ + 0.25, 0.75,  + 0.25],
+    [ + 0.25, 0.25,  + 0.25],
 
-    [bulletPos[0] - 0.25, 0.25, bulletPos[2] - 0.25],
-    [bulletPos[0] - 0.25, 0.75, bulletPos[2] - 0.25],
-    [bulletPos[0] + 0.25, 0.75, bulletPos[2] - 0.25],
-    [bulletPos[0] + 0.25, 0.25, bulletPos[2] - 0.25]
+    [ - 0.25, 0.25,  - 0.25],
+    [ - 0.25, 0.75,  - 0.25],
+    [ + 0.25, 0.75,  - 0.25],
+    [ + 0.25, 0.25,  - 0.25]
 ],
         // averaged normals: each one points diagonally out from cube center
     "normals": [
@@ -626,8 +626,9 @@ function loadModels() {
         
         } // end if triangle file loaded
 
-        //move the tank into its initial spot
+        //move actors into initial spot
         inputTriangles[6].translation = enemyPos;
+        inputTriangles[7].translation = bulletPos;
     } // end try 
 
     
