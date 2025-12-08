@@ -124,6 +124,7 @@ var textures = [];
 var viewDelta = 0.05; // how much to displace view with each key press
 
 var texMode = 1; // toggle blending modes
+var debugDisplay = false; //toggle debug displays (positions, etc.)
 
 /* shader parameter locations */
 var vPosAttribLoc; // where to put position for vertex shader
@@ -284,7 +285,7 @@ function drawHud(){
     const radius = 40;   // radar radius
 
     // draw the crosshair
-    hudCtx.strokeStyle = "yellow";
+    hudCtx.strokeStyle = "blue";
     hudCtx.beginPath();
     hudCtx.moveTo(256 - 10, 256);
     hudCtx.lineTo(256 + 10, 256);
@@ -347,24 +348,25 @@ function drawHud(){
 
     // lives display
     hudCtx.font = "20px Arial";
-    hudCtx.fillStyle = "yellow";
+    hudCtx.fillStyle = "blue";
     hudCtx.fillText("Lives: " + lives, 20, 40);
     hudCtx.fillText("Score: " + score, 320, 40);
     //debug displays
-    hudCtx.fillText(printVector(Eye), 20, 60);
-    hudCtx.fillText(yaw.toFixed(2),160, 60);
-    hudCtx.fillText("OBSTACLES", 20, 80);
-    for(var i = 1; i < inputTriangles.length -2; i++){
-        hudCtx.fillText(printVector(inputTriangles[i].translation),20, 80 + (i*20));
-    }
+    if(debugDisplay){
+        hudCtx.fillText(printVector(Eye), 20, 60);
+        hudCtx.fillText(yaw.toFixed(2),160, 60);
+        hudCtx.fillText("OBSTACLES", 20, 80);
+        for(var i = 1; i < inputTriangles.length -2; i++){
+            hudCtx.fillText(printVector(inputTriangles[i].translation),20, 80 + (i*20));
+        }
 
-    hudCtx.fillText("ENEMY POSITION", 320,60);
-    //var ep = vec3.fromValues(enemyPos[0],0,enemyPos[2]);
-    hudCtx.fillText(printVector(inputTriangles[6].translation), 320,80);
-    hudCtx.fillText("BULLET POSITIONS", 320,100);
-    //var bp = vec3.fromValues(bulletPos[0],0,bulletPos[2]);
-    hudCtx.fillText(printVector(inputTriangles[7].translation), 320,120);
-    hudCtx.fillText(printVector(inputTriangles[8].translation), 320,140);
+        //positions
+        hudCtx.fillText("ENEMY POSITION", 320,60);
+        hudCtx.fillText(printVector(inputTriangles[6].translation), 320,80);
+        hudCtx.fillText("BULLET POSITIONS", 320,100);
+        hudCtx.fillText(printVector(inputTriangles[7].translation), 320,120);
+        hudCtx.fillText(printVector(inputTriangles[8].translation), 320,140);
+}
 
 }
 
@@ -1005,6 +1007,7 @@ let aiCurrentTimerMax = 100; //maximum time before another direction is chosen
 let aiCurrentDirection = 0; //this number decides what direction the ai goes (one of eight cardinal)
 let aiFireChance = 0; //random number that determins if the tank fires
 let aiFireMax = 999; //chance needed every frame for the tank to fire. gets higher every point earned
+let aiCooldown = 0; //cooldown timer for AI after getting hit
 
 // render the loaded model
 function renderModels() {
@@ -1267,13 +1270,14 @@ function renderModels() {
         //set up distances
         let bulletDist2 = vec3.distance(Eye, bulletModel2.translation);
 
-        //register a hit, reset the enemy
+        //register a hit, lose a life
         if (bulletDist2 < TANK_HIT_RADIUS) {
-            console.log("HIT!");
+            console.log("PLAYER HIT!");
             playHit();
-            score += 100;
-            aiFireMax -= 1; //take shots more often
-            aiMoveScale += 0.001; //get faster for every point
+            lives --;
+            aiCooldown = 0; //give a little bit of cooldown
+            aiFireMax += 2; //take shots less often
+            aiMoveScale -= 0.002; //get a little easier
 
             resetBullet2();
             //respawnEnemy(enemyModel);
@@ -1365,7 +1369,7 @@ function renderModels() {
 
     //...and fire randomly
     aiFireChance = Math.random() * 1000;
-    if(aiFireChance > aiFireMax){
+    if(aiFireChance > aiFireMax && aiCooldown > 200){
         playFire();
         // Put bullet at the player's eye
         vec3.copy(bulletModel2.translation, tankModel.translation);
@@ -1387,6 +1391,7 @@ function renderModels() {
     }
 
     aiMoveTimer++;
+    aiCooldown++;
 
     //change cycle
     if(aiMoveTimer >= aiCurrentTimerMax){
