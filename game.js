@@ -3,6 +3,13 @@
 /* assignment specific globals */
 var SKY_URL = "https://mrdoognoog.github.io/csc461p5/sky.png"
 var HILLS_URL = "https://mrdoognoog.github.io/csc461p5/hills.png"
+
+
+/*more globals */
+var DAMAGE_0 = "https://mrdoognoog.github.io/csc461p5/crack0.png";
+var DAMAGE_1 = "https://mrdoognoog.github.io/csc461p5/crack1.png";
+var DAMAGE_2 = "https://mrdoognoog.github.io/csc461p5/crack2.png";
+var DAMAGE_3 = "https://mrdoognoog.github.io/csc461p5/crack3.png";
 var defaultEye = vec3.fromValues(0.5,0.5,0.5); // default eye position in world space
 var defaultCenter = vec3.fromValues(0.5,0.5,0.5); // default view direction in world space
 var defaultUp = vec3.fromValues(0,1,0); // default view up vector
@@ -256,7 +263,7 @@ function drawBg(){
     hillsImg.crossOrigin = "Anonymous";
     hillsImg.src = HILLS_URL;
     var iw = hillsImg.width, ih = hillsImg.height;
-    hillsImg.onload = function(){
+    //hillsImg.onload = function(){
         imageContext.drawImage(hillsImg,hillscroll-iw-iw,+60,iw-80,ih-20,0,0,cw,ch);
         imageContext.drawImage(hillsImg,hillscroll-iw,+60,iw-80,ih-20,0,0,cw,ch);
         imageContext.drawImage(hillsImg,hillscroll ,+60,iw-80,ih-20,0,0,cw,ch);
@@ -268,7 +275,7 @@ function drawBg(){
         imageContext.drawImage(hillsImg,hillscroll - iw,0,iw,ih,0,0,cw,ch);
         imageContext.drawImage(hillsImg,hillscroll + iw,0,iw,ih,0,0,cw,ch);
         imageContext.drawImage(hillsImg,hillscroll + iw+iw,0,iw,ih,0,0,cw,ch);
-    }
+    //}
 
     // if(hillscroll > iw){
     //     hillscroll = 0;
@@ -282,9 +289,21 @@ function drawHud(){
     var hudCanvas = document.getElementById("myHudCanvas");
     let hudCtx = hudCanvas.getContext("2d");
 
+    //preload the cracks
+    var cracks = [new Image(), new Image(), new Image(), new Image()];
+    for(var i = 0 ; i < 4; i++){
+        cracks[i].crossOrigin = "Anonymous";
+    }
+    cracks[0].src = DAMAGE_0;
+    cracks[1].src = DAMAGE_1;
+    cracks[2].src = DAMAGE_2;
+    cracks[3].src = DAMAGE_3;
+
+
     hudCtx.clearRect(0, 0, hudCanvas.width, hudCanvas.height);
 
     let cw = hudCanvas.width;
+    let ch = hudCanvas.height;
 
     const cx = cw / 2;   // radar center X
     const cy = 50;       // radar center Y
@@ -381,7 +400,10 @@ function drawHud(){
         hudCtx.fillText("BULLET POSITIONS", 320,100);
         hudCtx.fillText(printVector(inputTriangles[7].translation), 320,120);
         hudCtx.fillText(printVector(inputTriangles[8].translation), 320,140);
-}
+    }
+
+    //draw damage overlay
+    hudCtx.drawImage(cracks[1],0,0,512,512,0,0,512,512);   
 
 }
 
