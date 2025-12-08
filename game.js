@@ -12,6 +12,63 @@ var lightSpecular = vec3.fromValues(1,1,1); // default light specular emission
 var lightPosition = vec3.fromValues(-5.5,5.5,-5.5); // default light position
 var rotateTheta = Math.PI/200; // how much to rotate models by with each key press
 
+//sound effect data
+let audioCtx;
+let fireBuffer;
+let hitBuffer;
+let thudBuffer;
+
+function setupAudio(){
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    //load shot fire sound
+    fetch("fire.wav")
+        .then(r => r.arrayBuffer())
+        .then(data => audioCtx.decodeAudioData(data))
+        .then(buf => {
+            fireBuffer = buf;
+            console.log("Firing sound loaded");
+        });
+    //load hit sound
+    fetch("boom.wav")
+        .then(r => r.arrayBuffer())
+        .then(data => audioCtx.decodeAudioData(data))
+        .then(buf => {
+            hitBuffer = buf;
+            console.log("explosion sound loaded");
+        });
+    //load thud sound
+    fetch("thud.wav")
+        .then(r => r.arrayBuffer())
+        .then(data => audioCtx.decodeAudioData(data))
+        .then(buf => {
+            thudBuffer = buf;
+            console.log("thud sound loaded");
+        });
+}
+
+function playFire() {
+    if (!fireBuffer) return;
+    const src = audioCtx.createBufferSource();
+    src.buffer = fireBuffer;
+    src.connect(audioCtx.destination);
+    src.start(0);
+}
+function playHit() {
+    if (!hitBuffer) return;
+    const src = audioCtx.createBufferSource();
+    src.buffer = hitBuffer;
+    src.connect(audioCtx.destination);
+    src.start(0);
+}
+function playThud() {
+    if (!thudBuffer) return;
+    const src = audioCtx.createBufferSource();
+    src.buffer = thudBuffer;
+    src.connect(audioCtx.destination);
+    src.start(0);
+}
+
 var spinAngle = 0;
 var spinSpeed = 0.01;
 
@@ -986,6 +1043,7 @@ function renderModels() {
     if (keyState[" "] && !spaceWasDown) {
 
         console.log("blam!");
+        playFire();
 
         // Put bullet at the player's eye
         vec3.copy(bulletModel.translation, Eye);
@@ -1038,6 +1096,7 @@ function renderModels() {
             let objDist = vec3.distance(inputTriangles[i].translation, bulletModel.translation);
             if (objDist < TANK_HIT_RADIUS){
                 console.log("uh uh");
+                playThud();
                 resetBullet();
             }
         }
@@ -1048,6 +1107,7 @@ function renderModels() {
         //register a hit, reset the enemy
         if (bulletDist < TANK_HIT_RADIUS) {
             console.log("HIT!");
+            playHit();
             score += 100;
 
             resetBullet();
@@ -1180,6 +1240,7 @@ function renderModels() {
 function main() {
   
   setupWebGL(); // set up the webGL environment
+  setupAudio();
   loadModels(); // load in the models from tri file
   setupShaders(); // setup the webGL shaders
   renderModels(); // draw the triangles using webGL
