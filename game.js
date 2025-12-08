@@ -21,6 +21,8 @@ let treadBuffer;
 let pingBuffer;
 let pingTimer = 0;
 
+gameOver = false;
+
 /* set up the audio buffer */
 function setupAudio(){
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -351,6 +353,15 @@ function drawHud(){
     hudCtx.fillStyle = "blue";
     hudCtx.fillText("Lives: " + lives, 20, 40);
     hudCtx.fillText("Score: " + score, 320, 40);
+
+    if(lives <= 0){
+        hudCtx.font = "40px Arial";
+        hudCtx.fillStyle = "red";
+        hudCtx.fillText("Game Over!", 180,512/2);
+        hudCtx.fillText("Score: "+ score, 180, (512/2) + 50);
+        gameOver = true;
+    }
+
     //debug displays
     if(debugDisplay){
         hudCtx.fillText(printVector(Eye), 20, 60);
@@ -1413,7 +1424,7 @@ function renderModels() {
     }
     pingTimer++;
     
-    window.requestAnimationFrame(renderModels); // set up frame render callback
+    if(!gameOver) window.requestAnimationFrame(renderModels); // set up frame render callback
     
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT); // clear frame/depth buffers
     
