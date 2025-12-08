@@ -538,15 +538,17 @@ function loadModels() {
     [(objScale[0]/2)+0.25,  objScale[1]+0.5,  (objScale[2]/2) + 0.25 ],  // 6
     [(objScale[0]/2)+0.25,  0+0.5,            (objScale[2]/2) + 0.25 ],   // 7
     // //tank cannon
-    [cannonPos[0] - objScale[0] / 2, 0+0.5+cannonPos[2], cannonPos[1] + objScale[0] / 2],
-    [cannonPos[0] - objScale[0] / 2, (objScale[0] / 2)+0.5+cannonPos[2], cannonPos[1] + objScale[0] / 2],
-    [cannonPos[0] + objScale[0] / 2, (objScale[0] / 2)+0.5+cannonPos[2], cannonPos[1] + objScale[0] / 2],
-    [cannonPos[0] + objScale[0] / 2, 0+0.5+cannonPos[2], cannonPos[1] + objScale[0] / 2],
+    [0,            0 + 0.25,            0- 0.25           ],  // 0
+    [0,            objScale[1] + 0.25,  0- 0.25           ],  // 1
+    [objScale[0],  objScale[1] + 0.25,  0- 0.25           ],  // 2
+    [objScale[0],  0 + 0.25,            0- 0.25           ],  // 3
 
-    [cannonPos[0] - objScale[0] / 2, 0+0.5+cannonPos[2], cannonPos[1] - objScale[0] / 2],
-    [cannonPos[0] - objScale[0] / 2, (objScale[0] / 2)+0.5+cannonPos[2], cannonPos[1] - objScale[0] / 2],
-    [cannonPos[0] + objScale[0] / 2, (objScale[0] / 2)+0.5+cannonPos[2], cannonPos[1] - objScale[0] / 2],
-    [cannonPos[0] + objScale[0] / 2, 0+0.5+cannonPos[2], cannonPos[1] - objScale[0] / 2]
+    [0,            0 + 0.25,            objScale[2]- 0.25 ],  // 4
+    [0,            objScale[1] + 0.25,  objScale[2]- 0.25 ],  // 5
+    [objScale[0],  objScale[1] + 0.25,  objScale[2]- 0.25 ],  // 6
+    [objScale[0],  0 + 0.25,            objScale[2]- 0.25 ],   // 7
+
+
 ],
         // averaged normals: each one points diagonally out from cube center
     "normals": [
@@ -1407,7 +1409,8 @@ function renderModels() {
     //change cycle
     if(aiMoveTimer >= aiCurrentTimerMax){
         aiMoveTimer = 0;
-        aiCurrentDirection = Math.floor(Math.random() * 20)
+        //aiCurrentDirection = Math.floor(Math.random() * 20);
+        aiCurrentDirection = 100;
         aiCurrentTimerMax = Math.floor(Math.random() * 200 + 60);
     }
 
