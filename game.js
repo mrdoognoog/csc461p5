@@ -157,10 +157,14 @@ let bulletStartPos = vec3.create();
 let bulletDirection2 = vec3.fromValues(0, 0, -1);
 let bulletSpeed2 = 0;
 let bulletStartPos2 = vec3.create();
-const BULLET_MAX_DISTANCE = 100.0;
+const BULLET_MAX_DISTANCE = 40.0;
 const TANK_HIT_RADIUS = 1.0;
 const MAP_MIN = -6;
 const MAP_MAX = 6;
+
+//is there a bullet in the air?
+let isCannonFiring = false;
+let isCannonFiring2 = false;
 
 var lives = 3;
 var score = 0;
@@ -583,7 +587,7 @@ function loadModels() {
         [ 0.577,  0.577, -0.577],   // 6
         [ 0.577, -0.577, -0.577],    // 7
     ],
-        "uvs": [[0,0], [0,1], [1,0], [1,1]],
+        "uvs": [[0,0], [0,1], [1,0], [1,1],[0,0], [0,1], [1,0], [1,1]],
         "triangles": [
             //base of the tank
         [0,1,2],[0,2,3],      // front
@@ -1170,13 +1174,16 @@ function renderModels() {
     bulletModel2 = inputTriangles[8];
     bulletModel = inputTriangles[7];
     enemyModel = inputTriangles[6];
-    if (keyState[" "] && !spaceWasDown) {
+    if (keyState[" "] && !spaceWasDown && !isCannonFiring) {
 
         console.log("blam!");
         playFire();
 
         // Put bullet at the player's eye
         vec3.copy(bulletModel.translation, Eye);
+
+        //set player firing flag
+        isCannonFiring = true;
 
         // Compute firing direction based on camera yaw
         vec3.set(
@@ -1213,6 +1220,9 @@ function renderModels() {
 
         // (Optional) zero direction
         vec3.set(bulletDirection, 0, 0, 0);
+
+        //set the flag to fire again
+        isCannonFiring = false;
     }
     function resetBullet2() {
         bulletSpeed2 = 0;
@@ -1222,6 +1232,9 @@ function renderModels() {
 
         // (Optional) zero direction
         vec3.set(bulletDirection2, 0, 0, 0);
+
+        //set the flag to fire again
+        isCannonFiring2 = false;
     }
 
     //move the bullet (if active)
@@ -1382,7 +1395,7 @@ function renderModels() {
 
     //...and fire randomly
     aiFireChance = Math.random() * 1000;
-    if(aiFireChance > aiFireMax && aiCooldown > 200){
+    if(aiFireChance > aiFireMax && aiCooldown > 200 && !isCannonFiring2){
         playFire();
         // Put bullet at the player's eye
         vec3.copy(bulletModel2.translation, tankModel.translation);
@@ -1398,6 +1411,9 @@ function renderModels() {
         vec3.normalize(bulletDirection2, bulletDirection2);
 
         bulletSpeed2 = 0.1; // whatever speed you want
+
+        //set ai firing flag
+        isCannonFiring2=true;
 
         // Record starting point for distance tracking
         vec3.copy(bulletStartPos2, bulletModel2.translation);
