@@ -347,20 +347,18 @@ function loadModels() {
   })
   //render a bunch of obstacles
   for(var i = 0; i < 5; i++){
-    //var offset = [(Math.random() * 10) - 5,(Math.random() * 10) - 5];
-    var offset = [0,-2]
     inputTriangles.push({
         "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 1.0, "texture": "mandrill.jpg"}, 
         "vertices": [
-    [offset[0] - 0.5, 0, offset[1] + 0.5],
-    [offset[0] - 0.5, 1, offset[1] + 0.5],
-    [offset[0] + 0.5, 1, offset[1] + 0.5],
-    [offset[0] + 0.5, 0, offset[1] + 0.5],
+    [ - 0.5, 0,  + 0.5],
+    [ - 0.5, 1,  + 0.5],
+    [ + 0.5, 1,  + 0.5],
+    [ + 0.5, 0,  + 0.5],
 
-    [offset[0] - 0.5, 0, offset[1] - 0.5],
-    [offset[0] - 0.5, 1, offset[1] - 0.5],
-    [offset[0] + 0.5, 1, offset[1] - 0.5],
-    [offset[0] + 0.5, 0, offset[1] - 0.5]
+    [ - 0.5, 0,  - 0.5],
+    [ - 0.5, 1,  - 0.5],
+    [ + 0.5, 1,  - 0.5],
+    [ + 0.5, 0,  - 0.5]
 ],
         // averaged normals: each one points diagonally out from cube center
     "normals": [
@@ -627,6 +625,9 @@ function loadModels() {
         } // end if triangle file loaded
 
         //move actors into initial spot
+        for(var i = 1; i < 6; i++){
+            inputTriangles[i].translation = vec3.fromValues((Math.random() * 10) - 5,0,(Math.random() * 10) - 5)
+        }
         inputTriangles[6].translation = enemyPos;
         inputTriangles[7].translation = bulletPos;
     } // end try 
@@ -825,7 +826,7 @@ yaw = 0; // in radians
 var radarAngle = 0;
 
 function determineCollision(pos,obj){
-    cubeSize = 0.8;
+    cubeSize = 1.0;
     playerRadius = 0.2;
     // Distance between player and obstacle center
     let dx = Math.abs(pos[0] - obj[0]);
@@ -966,14 +967,13 @@ function renderModels() {
     //process collision
     var colliding = false;
     colcheck = vec3.add(vec3.create(), Eye, temp);
-    //for(var i = 2; i < inputTriangles.length; i++){
-        
-        if(determineCollision(colcheck, inputTriangles[6].translation)){
+    for(var i = 1; i < inputTriangles.length; i++){
+        if(determineCollision(colcheck, inputTriangles[i].translation)){
             //console.log("I am colliding with", i,"\n", colcheck,"\n",inputTriangles[i].translation);
             colliding = true;
             //break;
         }
-    //}
+    }
     if(!colliding) vec3.add(Eye, Eye, temp);
         
 
