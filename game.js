@@ -901,6 +901,12 @@ function determineCollision(pos,obj){
     return (dx < allowedX && dz < allowedZ);
 }
 
+//Tank AI variables
+let aiMoveScale = 0.01; //by how much to move by (faster over time)
+let aiMoveTimer = 0; //current timer of particular direction
+let aiCurrentTimerMax = 100; //maximum time before another direction is chosen
+var aiCurrentDirection = 0; //this number decides what direction the ai goes (one of eight cardinal)
+
 // render the loaded model
 function renderModels() {
 
@@ -1041,7 +1047,7 @@ function renderModels() {
     //keep center in front of the eye
     vec3.add(Center, Eye, forward);
 
-    //cannonfire (unfinished)
+    //cannonfire
     bulletModel = inputTriangles[7];
     enemyModel = inputTriangles[6];
     if (keyState[" "] && !spaceWasDown) {
@@ -1172,13 +1178,49 @@ function renderModels() {
     }
 
     //have the tank move around randomly
-    //translateModel(vec3.fromValues(0.01,0,0.01));
+
+
+    switch(aiCurrentDirection){
+        case 0:
+            translateModel(vec3.fromValues(1 * aiMoveScale, 0, 0));
+            break;
+        case 1:
+            translateModel(vec3.fromValues(1 * -aiMoveScale, 0, 0));
+            break;
+        case 2:
+            translateModel(vec3.fromValues(0, 0, 1 * aiMoveScale));
+            break;
+        case 3:
+            translateModel(vec3.fromValues(0, 0, 1 * -aiMoveScale));
+            break;
+        case 4:
+            translateModel(vec3.fromValues(1 * aiMoveScale, 0, 1 * -aiMoveScale));
+            break;
+        case 5:
+            translateModel(vec3.fromValues(1 * -aiMoveScale, 0, 1 * aiMoveScale));
+            break;
+        case 6:
+            translateModel(vec3.fromValues(1 * -aiMoveScale, 0, 1 * -aiMoveScale));
+            break;
+        case 7:
+            translateModel(vec3.fromValues(1 * aiMoveScale, 0, 1 * aiMoveScale));
+            break;
+        default:
+            translateModel(vec3.fromValues(0, 0, 0));
+            break;
+    }
+
+    aiMoveTimer++;
+
+    //change cycle
+    if(aiMoveTimer >= aiCurrentTimerMax){
+        aiMoveTimer = 0;
+        aiCurrentDirection = Math.floor(Math.random() * 20)
+        aiCurrentTimerMax = Math.floor(Math.random() * 200 + 60);
+    }
+
     //rotateModel(Up, dirEnum.NEGATIVE);
     turnTankTowardEye();
-    //enemyPos[0] += 0.01;
-    //enemyPos[1] += 0.01;
-    //update the collision map
-    //obstacles[5] = vec3.fromValues(enemyModel.translation[0],enemyModel.translation[1],enemyModel.translation[2])
 
     //draw the background (bg) and foreground (hud)
     drawBg();
