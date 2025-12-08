@@ -463,7 +463,7 @@ function loadModels() {
         inputTriangles = [];
         //add floors
   inputTriangles.push({
-    "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 1.0, "texture": "floor.png"}, 
+    "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.3,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 1.0}, 
     "vertices": [[-10, 0, 10],[10, 0, 10],[-10, 0, -10],[10,0,-10]],
     "normals": [[0, 0, -1],[0, 0,-1],[0, 0,-1],[0,0,-1]],
     "uvs": [[0,0], [1,0], [0,1], [1,1]],
@@ -777,7 +777,7 @@ function loadModels() {
                 //load textures
                 if (inputTriangles[whichSet].material && inputTriangles[whichSet].material.texture) {
                     textures[whichSet] = loadTexture(gl, 
-                        "https://mrdoognoog.github.io/csc461p4/" + inputTriangles[whichSet].material.texture);
+                        "https://mrdoognoog.github.io/csc461p5/" + inputTriangles[whichSet].material.texture);
                 } else {
                     console.warn("No texture found for model " + whichSet);
                 }
@@ -1409,8 +1409,8 @@ function renderModels() {
     //change cycle
     if(aiMoveTimer >= aiCurrentTimerMax){
         aiMoveTimer = 0;
-        //aiCurrentDirection = Math.floor(Math.random() * 20);
-        aiCurrentDirection = 100;
+        aiCurrentDirection = Math.floor(Math.random() * 20);
+        //aiCurrentDirection = 100; //debug
         aiCurrentTimerMax = Math.floor(Math.random() * 200 + 60);
     }
 
