@@ -18,6 +18,7 @@ let fireBuffer;
 let hitBuffer;
 let thudBuffer;
 
+/* set up the audio buffer */
 function setupAudio(){
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -27,7 +28,7 @@ function setupAudio(){
         .then(data => audioCtx.decodeAudioData(data))
         .then(buf => {
             fireBuffer = buf;
-            console.log("Firing sound loaded");
+
         });
     //load hit sound
     fetch("boom.wav")
@@ -35,7 +36,7 @@ function setupAudio(){
         .then(data => audioCtx.decodeAudioData(data))
         .then(buf => {
             hitBuffer = buf;
-            console.log("explosion sound loaded");
+
         });
     //load thud sound
     fetch("thud.wav")
@@ -43,10 +44,12 @@ function setupAudio(){
         .then(data => audioCtx.decodeAudioData(data))
         .then(buf => {
             thudBuffer = buf;
-            console.log("thud sound loaded");
+
         });
+    console.log("sounds loaded successfully");
 }
 
+/*functions for playing sound effects */
 function playFire() {
     if (!fireBuffer) return;
     const src = audioCtx.createBufferSource();
@@ -216,6 +219,7 @@ function drawBg(){
     //hillscroll =  hillscroll % hillsImg.width;
 }
 
+/* set up the HUD */
 function drawHud(){
 
     //set up the HUD
