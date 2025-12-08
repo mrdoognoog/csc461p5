@@ -1248,6 +1248,46 @@ function renderModels() {
         }
     }
 
+    //move the enemy bullet (if active)
+    if (bulletSpeed2 > 0) {
+        let delta = vec3.create();
+        vec3.scale(delta, bulletDirection2, -bulletSpeed2);
+        vec3.add(bulletModel2.translation, bulletModel2.translation, delta);
+
+        //check each obstacle
+        for(var i = 1; i < 6; i++){
+            let objDist = vec3.distance(inputTriangles[i].translation, bulletModel2.translation);
+            if (objDist < TANK_HIT_RADIUS){
+                console.log("uh uh");
+                playThud();
+                resetBullet();
+            }
+        }
+
+        //set up distances
+        let bulletDist2 = vec3.distance(Eye, bulletModel2.translation);
+
+        //register a hit, reset the enemy
+        if (bulletDist2 < TANK_HIT_RADIUS) {
+            console.log("HIT!");
+            playHit();
+            score += 100;
+            aiFireMax -= 1; //take shots more often
+            aiMoveScale += 0.001; //get faster for every point
+
+            resetBullet2();
+            //respawnEnemy(enemyModel);
+        }
+
+        // Compute distance from starting point
+        let dist = vec3.distance(bulletModel2.translation, bulletStartPos2);
+
+        // Reset if too far
+        if (dist > BULLET_MAX_DISTANCE) {
+            resetBullet2();
+        }
+    }
+
     //update enemy tank position(s)
     tankModel = inputTriangles[6];
     function translateModel(offset) {
@@ -1328,7 +1368,7 @@ function renderModels() {
     if(aiFireChance > aiFireMax){
         playFire();
         // Put bullet at the player's eye
-        vec3.copy(bulletModel2.translation, bulletModel2.translation);
+        vec3.copy(bulletModel2.translation, tankModel.translation);
 
         // Compute firing direction based on camera yaw
         vec3.set(
