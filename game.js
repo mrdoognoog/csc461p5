@@ -352,9 +352,10 @@ function drawHud(){
     hudCtx.fillText("ENEMY POSITION", 320,60);
     //var ep = vec3.fromValues(enemyPos[0],0,enemyPos[2]);
     hudCtx.fillText(printVector(inputTriangles[6].translation), 320,80);
-    hudCtx.fillText("BULLET POSITION", 320,100);
+    hudCtx.fillText("BULLET POSITIONS", 320,100);
     //var bp = vec3.fromValues(bulletPos[0],0,bulletPos[2]);
     hudCtx.fillText(printVector(inputTriangles[7].translation), 320,120);
+    hudCtx.fillText(printVector(inputTriangles[8].translation), 320,140);
 
 }
 
