@@ -1203,13 +1203,40 @@ function renderModels() {
 
     spaceWasDown = keyState[" "];
 
-    //respawn the enemy tank after it has been hit
     function respawnEnemy(enemyModel) {
-        let rx = MAP_MIN + Math.random() * (MAP_MAX - MAP_MIN);
-        let rz = MAP_MIN + Math.random() * (MAP_MAX - MAP_MIN);
+        const maxAttempts = 50;   // safety cap so we don't infinite loop
 
-        vec3.set(enemyModel.translation, rx, enemyModel.translation[1], rz);
+        for (let i = 0; i < maxAttempts; i++) {
+
+            // Random candidate point
+            let rx = MAP_MIN + Math.random() * (MAP_MAX - MAP_MIN);
+            let rz = MAP_MIN + Math.random() * (MAP_MAX - MAP_MIN);
+
+            // Vector from player to candidate spawn
+            let toPoint = vec3.fromValues(rx - Eye[0], 0, rz - Eye[2]);
+            vec3.normalize(toPoint, toPoint);
+
+            // Player forward direction from yaw
+            let forward = vec3.fromValues(Math.sin(yaw), 0, Math.cos(yaw));
+
+            // Dot product test:
+            //   dot > cos(FOV/2)  -> in front
+            //   dot < cos(FOV/2)  -> outside viewing cone
+            //   dot < 0           -> strictly behind
+            let dot = vec3.dot(toPoint, forward);
+
+            // Require respawn to be at least 120 behind
+            // cos(120) = -0.5
+            if (dot < -0.5) {
+                vec3.set(enemyModel.translation, rx, enemyModel.translation[1], rz);
+                return;
+            }
+        }
+
+        // fallback (if no valid point found)
+        console.warn("Could not find hidden respawn point.");
     }
+
 
     //reset the bullet, put it back to a "parking place" (far away where nothing would reach it)
     function resetBullet() {
