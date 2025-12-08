@@ -244,9 +244,9 @@ function drawHud(){
     hudCtx.fillText(printVector(Eye), 20, 60);
     hudCtx.fillText(yaw.toFixed(2),160, 60);
     hudCtx.fillText("OBSTACLES", 20, 80);
-    // for(var i = 0; i < obstacles.length; i++){
-    //     hudCtx.fillText(printVector(obstacles[i]),20, 100 + (i*20));
-    // }
+    for(var i = 1; i < inputTriangles.length -2; i++){
+        hudCtx.fillText(printVector(inputTriangles[i].translation),20, 80 + (i*20));
+    }
 
     hudCtx.fillText("ENEMY POSITION", 320,60);
     //var ep = vec3.fromValues(enemyPos[0],0,enemyPos[2]);
@@ -1032,8 +1032,15 @@ function renderModels() {
         let delta = vec3.create();
         vec3.scale(delta, bulletDirection, bulletSpeed);
         vec3.add(bulletModel.translation, bulletModel.translation, delta);
-        // bulletPos[0] = bulletModel.translation[0];
-        // bulletPos[2] = bulletModel.translation[2];
+
+        //check each obstacle
+        for(var i = 1; i < 6; i++){
+            let objDist = vec3.distance(inputTriangles[i].translation, bulletModel.translation);
+            if (objDist < TANK_HIT_RADIUS){
+                console.log("uh uh");
+                resetBullet();
+            }
+        }
 
         //set up distances
         let bulletDist = vec3.distance(enemyModel.translation, bulletModel.translation);
