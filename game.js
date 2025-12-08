@@ -773,6 +773,16 @@ function loadModels() {
 
         //move actors into initial spot
         for(var i = 1; i < 6; i++){
+            let a = (Math.random() * 10) - 5
+            let b = (Math.random() * 10) - 5
+
+            //make sure that you don't spawn on top of an obstacle
+            while(Math.floor(a) == 0 || Math.abs(Math.floor(a)) == 1){
+                a = (Math.random() * 10) - 5
+            }
+            while(Math.floor(b) == 0 || Math.abs(Math.floor(b)) == 1){
+                b = (Math.random() * 10) - 5
+            }
             inputTriangles[i].translation = vec3.fromValues((Math.random() * 10) - 5,0,(Math.random() * 10) - 5)
         }
         inputTriangles[6].translation = enemyPos;
