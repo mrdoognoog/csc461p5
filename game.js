@@ -51,12 +51,12 @@ var Up = vec3.clone(defaultUp); // view up vector in world space
 
 /* game variables */
 //var enemyPos = [1,-5]
-let enemyPos = vec3.fromValues(1,0,-5); //the INITIAL enemy position
+let enemyPos = vec3.fromValues(1,0,-2); //the INITIAL enemy position
 let bulletDirection = vec3.fromValues(0, 0, -1);
 let bulletSpeed = 0;
 let bulletStartPos = vec3.create();
 const BULLET_MAX_DISTANCE = 100.0;
-const TANK_HIT_RADIUS = 2.0;
+const TANK_HIT_RADIUS = 1.0;
 const MAP_MIN = -6;
 const MAP_MAX = 6;
 
@@ -389,7 +389,7 @@ function loadModels() {
 
   //draw the tank
   var offset = enemyPos;
-  var objScale = [0.5,0.5,0.5];
+  var objScale = [1.0,0.5,1.0];
   var topOffset = 8;
   var cannonOffset = 16;
   var cannonPos = [0.0, 0.75,-0.25];
@@ -397,26 +397,26 @@ function loadModels() {
         "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 1.0, "texture": "mandrill.jpg"}, 
         "vertices": [
             //base of the tank
-    [ objScale[0], 0,  objScale[0]],
-    [ objScale[0], objScale[0],  objScale[0]],
-    [ objScale[0], objScale[0],  objScale[0]],
-    [ objScale[0], 0,  objScale[0]],
+    [0,            0,            0           ],  // 0
+    [0,            objScale[1],  0           ],  // 1
+    [objScale[0],  objScale[1],  0           ],  // 2
+    [objScale[0],  0,            0           ],  // 3
 
-    [ objScale[0], 0,  objScale[0]],
-    [ objScale[0], objScale[0],  objScale[0]],
-    [ objScale[0], objScale[0],  objScale[0]],
-    [ objScale[0], 0,  objScale[0]],
+    [0,            0,            objScale[2] ],  // 4
+    [0,            objScale[1],  objScale[2] ],  // 5
+    [objScale[0],  objScale[1],  objScale[2] ],  // 6
+    [objScale[0],  0,            objScale[2] ],   // 7
     //top of the tank
-    [ objScale[0] / 2, 0+0.5,  objScale[0] / 2],
-    [ objScale[0] / 2, (objScale[0] / 2)+0.5,  objScale[0] / 2],
-    [ objScale[0] / 2, (objScale[0] / 2)+0.5,  objScale[0] / 2],
-    [ objScale[0] / 2, 0+0.5,  objScale[0] / 2],
+    [0+0.25,            0+0.5,            0 + 0.25          ],  // 0
+    [0+0.25,            objScale[1]+0.5,  0  + 0.25         ],  // 1
+    [(objScale[0]/2)+0.25,  objScale[1]+0.5,  0 + 0.25          ],  // 2
+    [(objScale[0]/2)+0.25,  0+0.5,            0+ 0.25           ],  // 3
 
-    [ objScale[0] / 2, 0+0.5,  objScale[0] / 2],
-    [ objScale[0] / 2, (objScale[0] / 2)+0.5,  objScale[0] / 2],
-    [ objScale[0] / 2, (objScale[0] / 2)+0.5,  objScale[0] / 2],
-    [ objScale[0] / 2, 0+0.5,  objScale[0] / 2],
-    //tank cannon
+    [0+0.25,            0+0.5,            (objScale[2]/2) + 0.25 ],  // 4
+    [0+0.25,            objScale[1]+0.5,  (objScale[2]/2) + 0.25 ],  // 5
+    [(objScale[0]/2)+0.25,  objScale[1]+0.5,  (objScale[2]/2) + 0.25 ],  // 6
+    [(objScale[0]/2)+0.25,  0+0.5,            (objScale[2]/2) + 0.25 ],   // 7
+    // //tank cannon
     [cannonPos[0] - objScale[0] / 2, 0+0.5+cannonPos[2], cannonPos[1] + objScale[0] / 2],
     [cannonPos[0] - objScale[0] / 2, (objScale[0] / 2)+0.5+cannonPos[2], cannonPos[1] + objScale[0] / 2],
     [cannonPos[0] + objScale[0] / 2, (objScale[0] / 2)+0.5+cannonPos[2], cannonPos[1] + objScale[0] / 2],
@@ -964,14 +964,15 @@ function renderModels() {
 
     //process collision
     var colliding = false;
-    for(var i = 2; i < inputTriangles.length; i++){
-        colcheck = vec3.add(vec3.create(), Eye, temp);
-        if(determineCollision(colcheck, inputTriangles[i].translation)){
+    colcheck = vec3.add(vec3.create(), Eye, temp);
+    //for(var i = 2; i < inputTriangles.length; i++){
+        
+        if(determineCollision(colcheck, inputTriangles[6].translation)){
             //console.log("I am colliding with", i,"\n", colcheck,"\n",inputTriangles[i].translation);
             colliding = true;
-            break;
+            //break;
         }
-    }
+    //}
     if(!colliding) vec3.add(Eye, Eye, temp);
         
 
