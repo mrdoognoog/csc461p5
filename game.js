@@ -229,7 +229,7 @@ function setupWebGL() {
  
 } // end setupWebGL
 
-var hillscroll = 0
+var hillscroll = 512
 
 function drawBg(){
     var imageCanvas = document.getElementById("myImageCanvas"); // create a 2d canvas
@@ -248,15 +248,20 @@ function drawBg(){
     var hillsImg = new Image();
     hillsImg.crossOrigin = "Anonymous";
     hillsImg.src = HILLS_URL;
+    var iw = hillsImg.width, ih = hillsImg.height;
     hillsImg.onload = function(){
-        var iw = hillsImg.width, ih = hillsImg.height;
+        imageContext.drawImage(hillsImg,hillscroll-iw,+60,iw-80,ih-20,0,0,cw,ch);
+        imageContext.drawImage(hillsImg,hillscroll - iw,+60,iw-80,ih-20,0,0,cw,ch);
+        imageContext.drawImage(hillsImg,hillscroll + iw,+60,iw-80,ih-20,0,0,cw,ch);
+
         imageContext.drawImage(hillsImg,hillscroll,0,iw,ih,0,0,cw,ch);
         imageContext.drawImage(hillsImg,hillscroll - iw,0,iw,ih,0,0,cw,ch);
         imageContext.drawImage(hillsImg,hillscroll + iw,0,iw,ih,0,0,cw,ch);
     }
 
-    //hillscroll++
-    //hillscroll =  hillscroll % hillsImg.width;
+    if(hillscroll > iw){
+        hillscroll = 0;
+    }
 }
 
 /* set up the HUD */
