@@ -17,6 +17,9 @@ let audioCtx;
 let fireBuffer;
 let hitBuffer;
 let thudBuffer;
+let treadBuffer;
+let pingBuffer;
+let pingTimer = 0;
 
 /* set up the audio buffer */
 function setupAudio(){
@@ -46,6 +49,22 @@ function setupAudio(){
             thudBuffer = buf;
 
         });
+    //load tread sound
+    fetch("tread.wav")
+        .then(r => r.arrayBuffer())
+        .then(data => audioCtx.decodeAudioData(data))
+        .then(buf => {
+            treadBuffer = buf;
+
+        });
+    //load ping sound
+    fetch("ping.wav")
+        .then(r => r.arrayBuffer())
+        .then(data => audioCtx.decodeAudioData(data))
+        .then(buf => {
+            pingBuffer = buf;
+
+        });
     console.log("sounds loaded successfully");
 }
 
@@ -70,6 +89,21 @@ function playThud() {
     src.buffer = thudBuffer;
     src.connect(audioCtx.destination);
     src.start(0);
+}
+function playTread() {
+    // if (!treadBuffer) return;
+    // const src = audioCtx.createBufferSource();
+    // src.buffer = treadBuffer;
+    // src.connect(audioCtx.destination);
+    // src.start(0);
+}
+function playPing() {
+    // console.log("we pingin");
+    // if (!pingBuffer) return;
+    // const src = audioCtx.createBufferSource();
+    // src.buffer = pingBuffer;
+    // src.connect(audioCtx.destination);
+    // src.start(0);
 }
 
 var spinAngle = 0;
@@ -1049,10 +1083,12 @@ function renderModels() {
     if(keyState["ArrowLeft"]) {
         hillscroll--;
         yaw -= rotateTheta;
+        //playTread();
     }
     if(keyState["ArrowRight"]) {
         hillscroll++;
         yaw += rotateTheta;
+        playTread();
     }
 
     //recompute forward from the yaw
@@ -1069,10 +1105,12 @@ function renderModels() {
     //move forward and back
     if(keyState["ArrowUp"]){
         vec3.scale(temp, forward, viewDelta);
+        playTread();
     }
 
     if(keyState["ArrowDown"]){
         vec3.scale(temp, forward, -viewDelta);
+        playTread();
             
     }
 
@@ -1269,6 +1307,23 @@ function renderModels() {
     aiFireChance = Math.random() * 1000;
     if(aiFireChance > aiFireMax){
         playFire();
+        // Put bullet at the player's eye
+        vec3.copy(bulletModel2.translation, bulletModel2.translation);
+
+        // Compute firing direction based on camera yaw
+        vec3.set(
+            bulletDirection2,
+            Math.sin(yaw),   // x
+            0,               // y
+            -Math.cos(yaw)   // z
+        );
+
+        vec3.normalize(bulletDirection2, bulletDirection2);
+
+        bulletSpeed2 = 0.1; // whatever speed you want
+
+        // Record starting point for distance tracking
+        vec3.copy(bulletStartPos2, bulletModel2.translation);
     }
 
     aiMoveTimer++;
@@ -1286,6 +1341,12 @@ function renderModels() {
     //draw the background (bg) and foreground (hud)
     drawBg();
     drawHud();
+
+    if(pingTimer == 180){
+        playPing();
+        pingTimer = 0;
+    }
+    pingTimer++;
     
     window.requestAnimationFrame(renderModels); // set up frame render callback
     
