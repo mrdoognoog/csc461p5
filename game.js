@@ -3,6 +3,7 @@
 /* assignment specific globals */
 var SKY_URL = "https://mrdoognoog.github.io/csc461p5/sky.png"
 var HILLS_URL = "https://mrdoognoog.github.io/csc461p5/hills.png"
+var BARRIER_URL = "https://mrdoognoog.github.io/csc461p5/barrier.png"
 var defaultEye = vec3.fromValues(0.5,0.5,0.5); // default eye position in world space
 var defaultCenter = vec3.fromValues(0.5,0.5,0.5); // default view direction in world space
 var defaultUp = vec3.fromValues(0,1,0); // default view up vector
@@ -472,7 +473,7 @@ function loadModels() {
   //render a bunch of obstacles
   for(var i = 0; i < 5; i++){
     inputTriangles.push({
-        "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 1.0, "texture": "mandrill.jpg"}, 
+        "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 1.0, "texture": "barrier.png"}, 
         "vertices": [
     [ - 0.5, 0,  + 0.5],
     [ - 0.5, 1,  + 0.5],
@@ -496,7 +497,7 @@ function loadModels() {
         [ 0.577,  0.577, -0.577],   // 6
         [ 0.577, -0.577, -0.577]    // 7
     ],
-        "uvs": [[0,0], [0,1], [1,0], [1,1]],
+        "uvs": [[0,0], [0,1], [1,1], [1,0],[0,0], [0,1], [1,1], [1,0]],
         "triangles": [
         [0,1,2],[0,2,3],      // front
         [3,2,6],[3,6,7],      // right
@@ -612,7 +613,7 @@ function loadModels() {
 
     //draw in the bullet (spawn offscreen for now)
     inputTriangles.push({
-        "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 1.0, "texture": "mandrill.jpg"}, 
+        "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 1.0, "texture": "barrier.png"}, 
         "vertices": [
     [ - 0.25, 0.25,  + 0.25],
     [ - 0.25, 0.75,  + 0.25],
@@ -636,7 +637,7 @@ function loadModels() {
         [ 0.577,  0.577, -0.577],   // 6
         [ 0.577, -0.577, -0.577]    // 7
     ],
-        "uvs": [[0,0], [0,1], [1,0], [1,1]],
+        "uvs": [[0,0], [0,1], [1,1], [1,0],[0,0], [0,1], [1,1], [1,0]],
         "triangles": [
         [0,1,2],[0,2,3],      // front
         [3,2,6],[3,6,7],      // right
@@ -649,7 +650,7 @@ function loadModels() {
 
     //draw the other bullet (offscreen, for enemy)
     inputTriangles.push({
-        "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 1.0, "texture": "mandrill.jpg"}, 
+        "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 1.0, "texture": "barrier.png"}, 
         "vertices": [
     [ - 0.25, 0.25,  + 0.25],
     [ - 0.25, 0.75,  + 0.25],
@@ -673,7 +674,7 @@ function loadModels() {
         [ 0.577,  0.577, -0.577],   // 6
         [ 0.577, -0.577, -0.577]    // 7
     ],
-        "uvs": [[0,0], [0,1], [1,0], [1,1]],
+        "uvs": [[0,0], [0,1], [1,1], [1,0],[0,0], [0,1], [1,1], [1,0]],
         "triangles": [
         [0,1,2],[0,2,3],      // front
         [3,2,6],[3,6,7],      // right
