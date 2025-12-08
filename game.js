@@ -10,7 +10,7 @@ var lightAmbient = vec3.fromValues(1,1,1); // default light ambient emission
 var lightDiffuse = vec3.fromValues(1,1,1); // default light diffuse emission
 var lightSpecular = vec3.fromValues(1,1,1); // default light specular emission
 var lightPosition = vec3.fromValues(-5.5,5.5,-5.5); // default light position
-var rotateTheta = Math.PI/100; // how much to rotate models by with each key press
+var rotateTheta = Math.PI/200; // how much to rotate models by with each key press
 
 var spinAngle = 0;
 var spinSpeed = 0.01;
@@ -51,22 +51,22 @@ var Up = vec3.clone(defaultUp); // view up vector in world space
 
 /* game variables */
 //var enemyPos = [1,-5]
-let enemyPos = vec3.fromValues(1,0,-5);
+let enemyPos = vec3.fromValues(1,0,-5); //the INITIAL enemy position
 let bulletDirection = vec3.fromValues(0, 0, -1);
 let bulletSpeed = 0;
 let bulletStartPos = vec3.create();
 const BULLET_MAX_DISTANCE = 100.0;
 const TANK_HIT_RADIUS = 2.0;
-const MAP_MIN = -20;
-const MAP_MAX = 20;
+const MAP_MIN = -6;
+const MAP_MAX = 6;
 
 var lives = 3;
 var score = 0;
 
 //holds the coordinates of all the obstacles in the level. used for collision
-var obstacles = [];
+//var obstacles = [];
 //var bulletPos = [0,0];
-var bulletPos = vec3.fromValues(0,0,0);
+var bulletPos = vec3.fromValues(0,0,0); //INITIAL bullet position
 
 // ASSIGNMENT HELPER FUNCTIONS
 
@@ -186,8 +186,8 @@ function drawHud(){
     const radarScale = 0.5;
 
     for (let i = 0; i < 1; i++) {
-        let ex = enemyPos[0];
-        let ey = enemyPos[2];
+        let ex = inputTriangles[6].translation[0];
+        let ey = inputTriangles[6].translation[2];
 
         // 1. relative position to player
         let dx = ex - Eye[0];
@@ -244,16 +244,16 @@ function drawHud(){
     hudCtx.fillText(printVector(Eye), 20, 60);
     hudCtx.fillText(yaw.toFixed(2),160, 60);
     hudCtx.fillText("OBSTACLES", 20, 80);
-    for(var i = 0; i < obstacles.length; i++){
-        hudCtx.fillText(printVector(obstacles[i]),20, 100 + (i*20));
-    }
+    // for(var i = 0; i < obstacles.length; i++){
+    //     hudCtx.fillText(printVector(obstacles[i]),20, 100 + (i*20));
+    // }
 
     hudCtx.fillText("ENEMY POSITION", 320,60);
-    var ep = vec3.fromValues(enemyPos[0],0,enemyPos[2]);
-    hudCtx.fillText(printVector(ep), 320,80);
+    //var ep = vec3.fromValues(enemyPos[0],0,enemyPos[2]);
+    hudCtx.fillText(printVector(inputTriangles[6].translation), 320,80);
     hudCtx.fillText("BULLET POSITION", 320,100);
-    var bp = vec3.fromValues(bulletPos[0],0,bulletPos[2]);
-    hudCtx.fillText(printVector(bp), 320,120);
+    //var bp = vec3.fromValues(bulletPos[0],0,bulletPos[2]);
+    hudCtx.fillText(printVector(inputTriangles[7].translation), 320,120);
 
 }
 
@@ -384,7 +384,7 @@ function loadModels() {
         [1,2,5],[2,5,6]       // top
     ]
     })
-    obstacles.push(vec3.fromValues(offset[0],0.5,offset[1]));
+    //obstacles.push(vec3.fromValues(offset[0],0.5,offset[1]));
   }
 
   //draw the tank
@@ -392,30 +392,30 @@ function loadModels() {
   var objScale = [0.5,0.5,0.5];
   var topOffset = 8;
   var cannonOffset = 16;
-  var cannonPos = [offset[0] + 0.0, offset[2] + 0.75,-0.25];
+  var cannonPos = [0.0, 0.75,-0.25];
     inputTriangles.push({
         "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 1.0, "texture": "mandrill.jpg"}, 
         "vertices": [
             //base of the tank
-    [offset[0] - objScale[0], 0, offset[2] + objScale[0]],
-    [offset[0] - objScale[0], objScale[0], offset[2] + objScale[0]],
-    [offset[0] + objScale[0], objScale[0], offset[2] + objScale[0]],
-    [offset[0] + objScale[0], 0, offset[2] + objScale[0]],
+    [ objScale[0], 0,  objScale[0]],
+    [ objScale[0], objScale[0],  objScale[0]],
+    [ objScale[0], objScale[0],  objScale[0]],
+    [ objScale[0], 0,  objScale[0]],
 
-    [offset[0] - objScale[0], 0, offset[2] - objScale[0]],
-    [offset[0] - objScale[0], objScale[0], offset[2] - objScale[0]],
-    [offset[0] + objScale[0], objScale[0], offset[2] - objScale[0]],
-    [offset[0] + objScale[0], 0, offset[2] - objScale[0]],
+    [ objScale[0], 0,  objScale[0]],
+    [ objScale[0], objScale[0],  objScale[0]],
+    [ objScale[0], objScale[0],  objScale[0]],
+    [ objScale[0], 0,  objScale[0]],
     //top of the tank
-    [offset[0] - objScale[0] / 2, 0+0.5, offset[2] + objScale[0] / 2],
-    [offset[0] - objScale[0] / 2, (objScale[0] / 2)+0.5, offset[2] + objScale[0] / 2],
-    [offset[0] + objScale[0] / 2, (objScale[0] / 2)+0.5, offset[2] + objScale[0] / 2],
-    [offset[0] + objScale[0] / 2, 0+0.5, offset[2] + objScale[0] / 2],
+    [ objScale[0] / 2, 0+0.5,  objScale[0] / 2],
+    [ objScale[0] / 2, (objScale[0] / 2)+0.5,  objScale[0] / 2],
+    [ objScale[0] / 2, (objScale[0] / 2)+0.5,  objScale[0] / 2],
+    [ objScale[0] / 2, 0+0.5,  objScale[0] / 2],
 
-    [offset[0] - objScale[0] / 2, 0+0.5, offset[2] - objScale[0] / 2],
-    [offset[0] - objScale[0] / 2, (objScale[0] / 2)+0.5, offset[2] - objScale[0] / 2],
-    [offset[0] + objScale[0] / 2, (objScale[0] / 2)+0.5, offset[2] - objScale[0] / 2],
-    [offset[0] + objScale[0] / 2, 0+0.5, offset[2] - objScale[0] / 2],
+    [ objScale[0] / 2, 0+0.5,  objScale[0] / 2],
+    [ objScale[0] / 2, (objScale[0] / 2)+0.5,  objScale[0] / 2],
+    [ objScale[0] / 2, (objScale[0] / 2)+0.5,  objScale[0] / 2],
+    [ objScale[0] / 2, 0+0.5,  objScale[0] / 2],
     //tank cannon
     [cannonPos[0] - objScale[0] / 2, 0+0.5+cannonPos[2], cannonPos[1] + objScale[0] / 2],
     [cannonPos[0] - objScale[0] / 2, (objScale[0] / 2)+0.5+cannonPos[2], cannonPos[1] + objScale[0] / 2],
@@ -485,10 +485,8 @@ function loadModels() {
         [1+cannonOffset,2+cannonOffset,5+cannonOffset],[2+cannonOffset,5+cannonOffset,6+cannonOffset],       // top
     ]
     })
-    obstacles.push(vec3.fromValues(offset[0],0.5,offset[2]));
+    //obstacles.push(vec3.fromValues(offset[0],0.5,offset[2]));
 
-  
-        
     //draw in the bullet (spawn offscreen for now)
     inputTriangles.push({
         "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 1.0, "texture": "mandrill.jpg"}, 
@@ -627,7 +625,11 @@ function loadModels() {
             } // end for each triangle set 
         
         } // end if triangle file loaded
+
+        //move the tank into its initial spot
+        inputTriangles[6].translation = enemyPos;
     } // end try 
+
     
     catch(e) {
         console.log(e);
@@ -962,10 +964,12 @@ function renderModels() {
 
     //process collision
     var colliding = false;
-    for(var i = 0; i < obstacles.length; i++){
+    for(var i = 2; i < inputTriangles.length; i++){
         colcheck = vec3.add(vec3.create(), Eye, temp);
-        if(determineCollision(colcheck, obstacles[i])){
+        if(determineCollision(colcheck, inputTriangles[i].translation)){
+            //console.log("I am colliding with", i,"\n", colcheck,"\n",inputTriangles[i].translation);
             colliding = true;
+            break;
         }
     }
     if(!colliding) vec3.add(Eye, Eye, temp);
@@ -976,6 +980,7 @@ function renderModels() {
 
     //cannonfire (unfinished)
     bulletModel = inputTriangles[7];
+    enemyModel = inputTriangles[6];
     if (keyState[" "] && !spaceWasDown) {
 
         console.log("blam!");
@@ -1009,18 +1014,6 @@ function renderModels() {
         vec3.set(enemyModel.translation, rx, enemyModel.translation[1], rz);
     }
 
-    //set up distances
-    let bulletDist = vec3.distance(enemyPos, bulletPos);
-
-    //register a hit, reset the enemy
-    if (bulletDist < TANK_HIT_RADIUS) {
-        console.log("HIT!");
-        score += 100;
-
-        resetBullet();
-        respawnEnemy(enemyModel);
-    }
-
     //reset the bullet, put it back to a "parking place" (far away where nothing would reach it)
     function resetBullet() {
         bulletSpeed = 0;
@@ -1037,8 +1030,20 @@ function renderModels() {
         let delta = vec3.create();
         vec3.scale(delta, bulletDirection, bulletSpeed);
         vec3.add(bulletModel.translation, bulletModel.translation, delta);
-        bulletPos[0] = bulletModel.translation[0];
-        bulletPos[2] = bulletModel.translation[2];
+        // bulletPos[0] = bulletModel.translation[0];
+        // bulletPos[2] = bulletModel.translation[2];
+
+        //set up distances
+        let bulletDist = vec3.distance(enemyModel.translation, bulletModel.translation);
+
+        //register a hit, reset the enemy
+        if (bulletDist < TANK_HIT_RADIUS) {
+            console.log("HIT!");
+            score += 100;
+
+            resetBullet();
+            respawnEnemy(enemyModel);
+        }
 
         // Compute distance from starting point
         let dist = vec3.distance(bulletModel.translation, bulletStartPos);
@@ -1068,30 +1073,30 @@ function renderModels() {
 
 
     function turnTankTowardEye() {
-    if (!tankModel) return;
+        if (!tankModel) return;
 
-    let tankYaw = Math.atan2(tankModel.xAxis[0], tankModel.xAxis[2]);
+        let tankYaw = Math.atan2(tankModel.xAxis[0], tankModel.xAxis[2]);
 
-    let dx = Eye[0] - enemyPos[0];
-    let dz = Eye[2] - enemyPos[2];
+        let dx = Eye[0] - enemyModel.translation[0];
+        let dz = Eye[2] - enemyModel.translation[2];
 
-    let targetYaw = Math.atan2(dx, dz);
+        let targetYaw = Math.atan2(dx, dz);
 
-    // Compute smallest turning direction
-    let diff = targetYaw - tankYaw;
-    diff = (diff + Math.PI*3) % (Math.PI*2) - Math.PI; // wrap to [-π,π]
+        // Compute smallest turning direction
+        let diff = targetYaw - tankYaw;
+        diff = (diff + Math.PI*3) % (Math.PI*2) - Math.PI; // wrap to [-π,π]
 
-    // Apply limited turning speed
-    let turnSpeed = 0.02; // radians per frame
-    let turnAmt = Math.max(-turnSpeed, Math.min(turnSpeed, diff));
+        // Apply limited turning speed
+        let turnSpeed = 0.02; // radians per frame
+        let turnAmt = Math.max(-turnSpeed, Math.min(turnSpeed, diff));
 
-    // Rotate tank around Y
-    let rot = mat4.create();
-    mat4.fromYRotation(rot, turnAmt);
+        // Rotate tank around Y
+        let rot = mat4.create();
+        mat4.fromYRotation(rot, turnAmt);
 
-    vec3.transformMat4(tankModel.xAxis, tankModel.xAxis, rot);
-    vec3.transformMat4(tankModel.yAxis, tankModel.yAxis, rot);
-}
+        vec3.transformMat4(tankModel.xAxis, tankModel.xAxis, rot);
+        vec3.transformMat4(tankModel.yAxis, tankModel.yAxis, rot);
+    }
 
     //have the tank move around randomly
     //translateModel(vec3.fromValues(0.01,0,0.01));
@@ -1100,7 +1105,7 @@ function renderModels() {
     //enemyPos[0] += 0.01;
     //enemyPos[1] += 0.01;
     //update the collision map
-    obstacles[5] = vec3.fromValues(enemyPos[0],0,enemyPos[2])
+    //obstacles[5] = vec3.fromValues(enemyModel.translation[0],enemyModel.translation[1],enemyModel.translation[2])
 
     //draw the background (bg) and foreground (hud)
     drawBg();
