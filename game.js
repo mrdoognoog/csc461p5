@@ -100,12 +100,12 @@ function playTread() {
     // src.start(0);
 }
 function playPing() {
-    // console.log("we pingin");
-    // if (!pingBuffer) return;
-    // const src = audioCtx.createBufferSource();
-    // src.buffer = pingBuffer;
-    // src.connect(audioCtx.destination);
-    // src.start(0);
+    console.log("we pingin");
+    if (!pingBuffer) return;
+    const src = audioCtx.createBufferSource();
+    src.buffer = pingBuffer;
+    src.connect(audioCtx.destination);
+    src.start(0);
 }
 
 var spinAngle = 0;
