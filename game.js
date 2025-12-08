@@ -50,7 +50,8 @@ var Center = vec3.clone(defaultCenter); // view direction in world space
 var Up = vec3.clone(defaultUp); // view up vector in world space
 
 /* game variables */
-var enemyPos = [1,-5]
+//var enemyPos = [1,-5]
+let enemyPos = vec3.fromValues(1,0,-5);
 let bulletDirection = vec3.fromValues(0, 0, -1);
 let bulletSpeed = 0;
 let bulletStartPos = vec3.create();
@@ -64,7 +65,8 @@ var score = 0;
 
 //holds the coordinates of all the obstacles in the level. used for collision
 var obstacles = [];
-var bulletPos = [0,0];
+//var bulletPos = [0,0];
+var bulletPos = vec3.fromValues(0,0,0);
 
 // ASSIGNMENT HELPER FUNCTIONS
 
@@ -183,9 +185,9 @@ function drawHud(){
     //draw the radar
     const radarScale = 0.5;
 
-    for (let i = 0; i < enemyPos.length; i++) {
+    for (let i = 0; i < 1; i++) {
         let ex = enemyPos[0];
-        let ey = enemyPos[1];
+        let ey = enemyPos[2];
 
         // 1. relative position to player
         let dx = ex - Eye[0];
@@ -247,10 +249,10 @@ function drawHud(){
     }
 
     hudCtx.fillText("ENEMY POSITION", 320,60);
-    var ep = vec3.fromValues(enemyPos[0],0,enemyPos[1]);
+    var ep = vec3.fromValues(enemyPos[0],0,enemyPos[2]);
     hudCtx.fillText(printVector(ep), 320,80);
     hudCtx.fillText("BULLET POSITION", 320,100);
-    var bp = vec3.fromValues(bulletPos[0],0,bulletPos[1]);
+    var bp = vec3.fromValues(bulletPos[0],0,bulletPos[2]);
     hudCtx.fillText(printVector(bp), 320,120);
 
 }
@@ -390,30 +392,30 @@ function loadModels() {
   var objScale = [0.5,0.5,0.5];
   var topOffset = 8;
   var cannonOffset = 16;
-  var cannonPos = [offset[0] + 0.0, offset[1] + 0.75,-0.25];
+  var cannonPos = [offset[0] + 0.0, offset[2] + 0.75,-0.25];
     inputTriangles.push({
         "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 1.0, "texture": "mandrill.jpg"}, 
         "vertices": [
             //base of the tank
-    [offset[0] - objScale[0], 0, offset[1] + objScale[0]],
-    [offset[0] - objScale[0], objScale[0], offset[1] + objScale[0]],
-    [offset[0] + objScale[0], objScale[0], offset[1] + objScale[0]],
-    [offset[0] + objScale[0], 0, offset[1] + objScale[0]],
+    [offset[0] - objScale[0], 0, offset[2] + objScale[0]],
+    [offset[0] - objScale[0], objScale[0], offset[2] + objScale[0]],
+    [offset[0] + objScale[0], objScale[0], offset[2] + objScale[0]],
+    [offset[0] + objScale[0], 0, offset[2] + objScale[0]],
 
-    [offset[0] - objScale[0], 0, offset[1] - objScale[0]],
-    [offset[0] - objScale[0], objScale[0], offset[1] - objScale[0]],
-    [offset[0] + objScale[0], objScale[0], offset[1] - objScale[0]],
-    [offset[0] + objScale[0], 0, offset[1] - objScale[0]],
+    [offset[0] - objScale[0], 0, offset[2] - objScale[0]],
+    [offset[0] - objScale[0], objScale[0], offset[2] - objScale[0]],
+    [offset[0] + objScale[0], objScale[0], offset[2] - objScale[0]],
+    [offset[0] + objScale[0], 0, offset[2] - objScale[0]],
     //top of the tank
-    [offset[0] - objScale[0] / 2, 0+0.5, offset[1] + objScale[0] / 2],
-    [offset[0] - objScale[0] / 2, (objScale[0] / 2)+0.5, offset[1] + objScale[0] / 2],
-    [offset[0] + objScale[0] / 2, (objScale[0] / 2)+0.5, offset[1] + objScale[0] / 2],
-    [offset[0] + objScale[0] / 2, 0+0.5, offset[1] + objScale[0] / 2],
+    [offset[0] - objScale[0] / 2, 0+0.5, offset[2] + objScale[0] / 2],
+    [offset[0] - objScale[0] / 2, (objScale[0] / 2)+0.5, offset[2] + objScale[0] / 2],
+    [offset[0] + objScale[0] / 2, (objScale[0] / 2)+0.5, offset[2] + objScale[0] / 2],
+    [offset[0] + objScale[0] / 2, 0+0.5, offset[2] + objScale[0] / 2],
 
-    [offset[0] - objScale[0] / 2, 0+0.5, offset[1] - objScale[0] / 2],
-    [offset[0] - objScale[0] / 2, (objScale[0] / 2)+0.5, offset[1] - objScale[0] / 2],
-    [offset[0] + objScale[0] / 2, (objScale[0] / 2)+0.5, offset[1] - objScale[0] / 2],
-    [offset[0] + objScale[0] / 2, 0+0.5, offset[1] - objScale[0] / 2],
+    [offset[0] - objScale[0] / 2, 0+0.5, offset[2] - objScale[0] / 2],
+    [offset[0] - objScale[0] / 2, (objScale[0] / 2)+0.5, offset[2] - objScale[0] / 2],
+    [offset[0] + objScale[0] / 2, (objScale[0] / 2)+0.5, offset[2] - objScale[0] / 2],
+    [offset[0] + objScale[0] / 2, 0+0.5, offset[2] - objScale[0] / 2],
     //tank cannon
     [cannonPos[0] - objScale[0] / 2, 0+0.5+cannonPos[2], cannonPos[1] + objScale[0] / 2],
     [cannonPos[0] - objScale[0] / 2, (objScale[0] / 2)+0.5+cannonPos[2], cannonPos[1] + objScale[0] / 2],
@@ -483,7 +485,7 @@ function loadModels() {
         [1+cannonOffset,2+cannonOffset,5+cannonOffset],[2+cannonOffset,5+cannonOffset,6+cannonOffset],       // top
     ]
     })
-    obstacles.push(vec3.fromValues(offset[0],0.5,offset[1]));
+    obstacles.push(vec3.fromValues(offset[0],0.5,offset[2]));
 
   
         
@@ -491,15 +493,15 @@ function loadModels() {
     inputTriangles.push({
         "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.4,0.4], "specular": [0.3,0.3,0.3], "n": 11, "alpha": 1.0, "texture": "mandrill.jpg"}, 
         "vertices": [
-    [bulletPos[0] - 0.25, 0.25, bulletPos[1] + 0.25],
-    [bulletPos[0] - 0.25, 0.75, bulletPos[1] + 0.25],
-    [bulletPos[0] + 0.25, 0.75, bulletPos[1] + 0.25],
-    [bulletPos[0] + 0.25, 0.25, bulletPos[1] + 0.25],
+    [bulletPos[0] - 0.25, 0.25, bulletPos[2] + 0.25],
+    [bulletPos[0] - 0.25, 0.75, bulletPos[2] + 0.25],
+    [bulletPos[0] + 0.25, 0.75, bulletPos[2] + 0.25],
+    [bulletPos[0] + 0.25, 0.25, bulletPos[2] + 0.25],
 
-    [bulletPos[0] - 0.25, 0.25, bulletPos[1] - 0.25],
-    [bulletPos[0] - 0.25, 0.75, bulletPos[1] - 0.25],
-    [bulletPos[0] + 0.25, 0.75, bulletPos[1] - 0.25],
-    [bulletPos[0] + 0.25, 0.25, bulletPos[1] - 0.25]
+    [bulletPos[0] - 0.25, 0.25, bulletPos[2] - 0.25],
+    [bulletPos[0] - 0.25, 0.75, bulletPos[2] - 0.25],
+    [bulletPos[0] + 0.25, 0.75, bulletPos[2] - 0.25],
+    [bulletPos[0] + 0.25, 0.25, bulletPos[2] - 0.25]
 ],
         // averaged normals: each one points diagonally out from cube center
     "normals": [
@@ -1008,9 +1010,7 @@ function renderModels() {
     }
 
     //set up distances
-    var enemyD = vec3.fromValues(enemyPos[0],0,enemyPos[2]);
-    var bulletD = vec3.fromValues(bulletPos[0],0,bulletPos[2]);
-    let bulletDist = vec3.distance(enemyD, bulletD);
+    let bulletDist = vec3.distance(enemyPos, bulletPos);
 
     //register a hit, reset the enemy
     if (bulletDist < TANK_HIT_RADIUS) {
@@ -1038,7 +1038,7 @@ function renderModels() {
         vec3.scale(delta, bulletDirection, bulletSpeed);
         vec3.add(bulletModel.translation, bulletModel.translation, delta);
         bulletPos[0] = bulletModel.translation[0];
-        bulletPos[1] = bulletModel.translation[2];
+        bulletPos[2] = bulletModel.translation[2];
 
         // Compute distance from starting point
         let dist = vec3.distance(bulletModel.translation, bulletStartPos);
@@ -1073,7 +1073,7 @@ function renderModels() {
     let tankYaw = Math.atan2(tankModel.xAxis[0], tankModel.xAxis[2]);
 
     let dx = Eye[0] - enemyPos[0];
-    let dz = Eye[2] - enemyPos[1];
+    let dz = Eye[2] - enemyPos[2];
 
     let targetYaw = Math.atan2(dx, dz);
 
@@ -1100,7 +1100,7 @@ function renderModels() {
     //enemyPos[0] += 0.01;
     //enemyPos[1] += 0.01;
     //update the collision map
-    obstacles[5] = vec3.fromValues(enemyPos[0],0,enemyPos[1])
+    obstacles[5] = vec3.fromValues(enemyPos[0],0,enemyPos[2])
 
     //draw the background (bg) and foreground (hud)
     drawBg();
