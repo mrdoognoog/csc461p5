@@ -1,15 +1,15 @@
 /* GLOBAL CONSTANTS AND VARIABLES */
 
 /* assignment specific globals */
-var SKY_URL = "https://mrdoognoog.github.io/csc461p5/sky.png"
-var HILLS_URL = "https://mrdoognoog.github.io/csc461p5/hills.png"
+var SKY_URL = "https://lloyddeg.github.io/csc461p5/sky.png"
+var HILLS_URL = "https://lloyddeg.github.io/csc461p5/hills.png"
 
 
 /*more globals */
-var DAMAGE_0 = "https://mrdoognoog.github.io/csc461p5/crack0.png";
-var DAMAGE_1 = "https://mrdoognoog.github.io/csc461p5/crack1.png";
-var DAMAGE_2 = "https://mrdoognoog.github.io/csc461p5/crack2.png";
-var DAMAGE_3 = "https://mrdoognoog.github.io/csc461p5/crack3.png";
+var DAMAGE_0 = "https://lloyddeg.github.io/csc461p5/crack0.png";
+var DAMAGE_1 = "https://lloyddeg.github.io/csc461p5/crack1.png";
+var DAMAGE_2 = "https://lloyddeg.github.io/csc461p5/crack2.png";
+var DAMAGE_3 = "https://lloyddeg.github.io/csc461p5/crack3.png";
 var defaultEye = vec3.fromValues(0.5,0.5,0.5); // default eye position in world space
 var defaultCenter = vec3.fromValues(0.5,0.5,0.5); // default view direction in world space
 var defaultUp = vec3.fromValues(0,1,0); // default view up vector
@@ -804,7 +804,7 @@ function loadModels() {
                 //load textures
                 if (inputTriangles[whichSet].material && inputTriangles[whichSet].material.texture) {
                     textures[whichSet] = loadTexture(gl, 
-                        "https://mrdoognoog.github.io/csc461p5/" + inputTriangles[whichSet].material.texture);
+                        "https://lloyddeg.github.io/csc461p5/" + inputTriangles[whichSet].material.texture);
                 } else {
                     console.warn("No texture found for model " + whichSet);
                 }
